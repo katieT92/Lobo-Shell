@@ -5,6 +5,6 @@
 //    separated by whitespace.
 // Returns the number of words
 //
-int split_cmd_line(char* line, char** list_to_populate); 
-
+int split_cmd_line(char* line, char** list_to_populate);
+int pipeCount(char** line_words, int NumberOfWords);
 #endif
