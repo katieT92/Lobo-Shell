@@ -22,3 +22,21 @@ int split_cmd_line(char* line, char** list_to_populate) {
 
    return i;
 }
+
+//IN: Char ** , int
+//OUT: Integer
+//checks and counts number of | symbols  in the line_words array based on the number of words in that array.
+//If there are no pipes will return 0
+//If there are pipes, will return the number of pipes found.
+int pipeCount(char** line_words, int numberOfWords){
+    int pipeCount = 0;
+    for(int i = 0; i < numberOfWords; i++){
+        if(strchr(line_words[i], '|') != NULL){
+            if((strlen(line_words[i])) == 1){
+                pipeCount++;
+            }
+        }
+    }
+    return pipeCount;
+}
+
