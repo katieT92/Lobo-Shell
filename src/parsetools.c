@@ -32,7 +32,9 @@ int pipeCount(char** line_words, int numberOfWords){
     int pipeCount = 0;
     for(int i = 0; i < numberOfWords; i++){
         if(strchr(line_words[i], '|') != NULL){
-            pipeCount++;
+            if((strlen(line_words[i])) == 1){
+                pipeCount++;
+            }
         }
     }
     return pipeCount;
