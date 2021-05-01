@@ -29,9 +29,9 @@ int main()
             printf("Line Words: %s\n", line_words[i]);
         }
 
-        int pipeLoop = 0;
-        pipeLoop = pipeCount(line_words, num_words);
-        printf("Pipe Loop Number: %d\n", pipeLoop);
+        int number_Of_Pipes = 0;
+        number_Of_Pipes = pipeCount(line_words, num_words);
+        printf("PipeCount: %d\n", number_Of_Pipes);
 
 
 
