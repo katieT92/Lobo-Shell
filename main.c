@@ -22,16 +22,40 @@ int main()
     printf("Conch Shell: ");
     while( fgets(line, MAX_LINE_CHARS, stdin) ) {
 
-        int num_words = split_cmd_line(line, line_words);
-
-        printf("Num Words: %d\n", num_words);
-
         int pipeLoop = 0;
-        pipeLoop = pipeCount(line_words, num_words);
-        if(pipeLoop > 0) {
-            pipeLoop++;
+        pipeLoop = pipeCount(line);
 
+        printf("Pipe Loop Number: %d\n", pipeLoop);
+        if(pipeLoop > 0) {
             char* pipeCommandArray[pipeLoop];
+            int numberOfWordsWithoutPipe = split_piped_line(line, pipeCommandArray, pipeLoop);
+            printf("NumberOfWordsInPipe: %d\n", numberOfWordsWithoutPipe);
+
+
+            for (int i = 0; i < numberOfWordsWithoutPipe; i++) {
+                printf("pipeCommand : %s\n", pipeCommandArray[i]);
+
+            }
+
+
+        }else {
+            int num_words = split_cmd_line(line, line_words);
+            printf("Num Words: %d\n", num_words);
+
+            for (int i=0; i < num_words; i++) {
+                printf("Line Words: %s\n", line_words[i]);
+            }
+
+        }
+
+
+
+
+
+
+
+
+/*
             // Extract the first token
             char * token = strtok(line, "|");
             pipeCommandArray[pipeLoop] = token;
@@ -47,11 +71,10 @@ int main()
                 printf("pipeCommand : %s\n", pipeCommandArray[i]);
 
             }
-        }
+            */
 
-        for (int i=0; i < num_words; i++) {
-            printf("Line Words: %s\n", line_words[i]);
-        }
+
+
         printf("Conch Shell: ");
     }
 

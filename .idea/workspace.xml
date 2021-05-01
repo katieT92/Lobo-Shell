@@ -21,10 +21,35 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="MakefileLocalSettings">
+    <option name="availableProjects">
+      <map>
+        <entry>
+          <key>
+            <ExternalProjectPojo>
+              <option name="name" value="Lobo-Shell" />
+              <option name="path" value="$PROJECT_DIR$" />
+            </ExternalProjectPojo>
+          </key>
+          <value>
+            <list>
+              <ExternalProjectPojo>
+                <option name="name" value="Lobo-Shell" />
+                <option name="path" value="D:\SSU Courses\2021\CS450\Lobo-Shell" />
+              </ExternalProjectPojo>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="projectSyncType">
       <map>
         <entry key="$PROJECT_DIR$" value="RE_IMPORT" />
@@ -43,7 +68,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="cf.first.check.clang-format" value="false" />
     <property name="cidr.known.project.marker" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../CS460/HW3" />
   </component>
   <component name="RunManager">
     <configuration name="Test" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" RUN_PATH="$PROJECT_DIR$/main.c" EXPLICIT_BUILD_TARGET_NAME="all">
@@ -67,7 +92,11 @@
       <updated>1619322098951</updated>
       <workItem from="1619322100469" duration="82000" />
       <workItem from="1619392444112" duration="5087000" />
-      <workItem from="1619413572260" duration="2000" />
+      <workItem from="1619413572260" duration="233000" />
+      <workItem from="1619562324458" duration="158000" />
+      <workItem from="1619562548444" duration="67000" />
+      <workItem from="1619845177731" duration="115000" />
+      <workItem from="1619889865378" duration="5671000" />
     </task>
     <servers />
   </component>
