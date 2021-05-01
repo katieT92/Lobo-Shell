@@ -22,31 +22,18 @@ int main()
     printf("Conch Shell: ");
     while( fgets(line, MAX_LINE_CHARS, stdin) ) {
 
-        int pipeLoop = 0;
-        pipeLoop = pipeCount(line);
+        int num_words = split_cmd_line(line, line_words);
+        printf("Num Words: %d\n", num_words);
 
-        printf("Pipe Loop Number: %d\n", pipeLoop);
-        if(pipeLoop > 0) {
-            char* pipeCommandArray[pipeLoop];
-            int numberOfWordsWithoutPipe = split_piped_line(line, pipeCommandArray, pipeLoop);
-            printf("NumberOfWordsInPipe: %d\n", numberOfWordsWithoutPipe);
-
-
-            for (int i = 0; i < numberOfWordsWithoutPipe; i++) {
-                printf("pipeCommand : %s\n", pipeCommandArray[i]);
-
-            }
-
-
-        }else {
-            int num_words = split_cmd_line(line, line_words);
-            printf("Num Words: %d\n", num_words);
-
-            for (int i=0; i < num_words; i++) {
-                printf("Line Words: %s\n", line_words[i]);
-            }
-
+        for (int i=0; i < num_words; i++) {
+            printf("Line Words: %s\n", line_words[i]);
         }
+
+        int pipeLoop = 0;
+        pipeLoop = pipeCount(line_words, num_words);
+        printf("Pipe Loop Number: %d\n", pipeLoop);
+
+
 
 
 
