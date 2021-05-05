@@ -15,16 +15,6 @@ int pipeCount(char** line_words, int numberOfWords);
 void syserror(const char *s);
 
 
-<<<<<<< Updated upstream
-    // Loop until user hits Ctrl-D (end of input)
-    // or some other input error occurs
-    while( fgets(line, MAX_LINE_CHARS, stdin) ) {
-        int num_words = split_cmd_line(line, line_words);
-
-        for (int i=0; i < num_words; i++) {
-            printf("%s\n", line_words[i]);
-        }
-=======
 int main() {
     char line[MAX_LINE_CHARS];                                              // Buffer for reading one line of input
     char* line_words[MAX_LINE_WORDS + 1];                                   // Holds separated words based on whitespace
@@ -45,14 +35,8 @@ int main() {
 
         runSimpleCommands();
         runRedirects();
-        runPipes();
->>>>>>> Stashed changes
+        int i = 0;
+        i = runPipes(line_words, num_words, number_Of_Pipes);
     }
     return 0;
-<<<<<<< Updated upstream
 }
-
-
-=======
-}
->>>>>>> Stashed changes
