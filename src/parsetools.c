@@ -106,4 +106,166 @@ void runSimpleCommands(){}
 void runRedirects(){}
 void runPipes(){}
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+
+
+int runPipes(char** line_words, int num_words, int number_Of_Pipes){
+    //int pfd[number_Of_Pipes*2];                                     // read end and write end for each pipe
+    int pfd[2];                                     // read end and write end for each pipe
+    //int i = 0;
+  //  int j = 0;
+    int input = 0;
+/*
+    while (i < num_words){
+        // START GETTING THE COMMAND TO PASS TO EXECVP. STORE IT IN variable, "command"
+        while (j < num_words && strchr(line_words[j], '|') == NULL)     // find size that pointer to command should be
+            j++;
+        char *command[j*sizeof(char*)];                                // create correct size command pointer
+        int insertIdx = 0;                                             // in each loop we' we'll insert into command starting at idx 0
+        while (i < j){                                                  // insert into simple commands and args into command
+            command[insertIdx] = line_words[i];
+            printf("linewords: %s\n", line_words[i]);                   // testing correct contents of line_words to copy
+            printf("command: %s\n", command[insertIdx]);                // testing correct contents of command
+            i++;
+            insertIdx++;
+        }
+        command[insertIdx] = NULL;                                      // all commands should end with null to pass to execvp
+        printf("command: %s\n\n", command[insertIdx]);                  // testing
+        i++;
+        j++;                                                              
+        // END GETTING THE COMMAND TO PASS TO EXECVP. Ready for use.
+
+*/
+        for(int pfdIdx = 0; pfdIdx <= number_Of_Pipes; pfdIdx += 2){     // pipes pfd(0), pfd(2), pfd(4), ... , pfd(number_Of_Pipes*2)
+            if (pipe(pfd + pfdIdx) == -1)
+                syserror( "Could not create a pipe" );
+            createProcess(input, pfd[1], line_words);
+            close(pfd[1]);
+            input = pfd[0];
+        }
+        if (input != 0)
+            dup2(input, 0);
+        return execvp (line_words[0], line_words);
+   // }
+}
+
+
+void pipePrep(char** line_words, char** arrayToReturn, int num_words){
+
+    for(int i = 0; i < num_words; i++){
+        if(strcmp(line_words[i], "|") != 0 && i != num_words){
+            arrayToReturn[i] = line_words[i];
+        } else if(strcmp(line_words[i],"|") == 0 || i == num_words){
+            arrayToReturn[i] = NULL;
+        }else{
+
+        }
+    }
+arrayToReturn[num_words + 1] = NULL;
+}
+
+// void runPipes(char** line_words, int num_words, int number_Of_Pipes){
+    
+//     typedef struct commandStruct {
+//         char **args;
+//     } Command;
+
+//     Command *command = malloc(number_Of_Pipes-1 * sizeof *command);
+//     char *simpleCommand = malloc(sizeof *simpleCommand);
+//     int commandIdxToInsert = 0;
+//     int simpleCommandRunningLength = 0;
+//     int lineWordsIdx = 0;
+//     bool foundPipe = false;
+
+//     while (lineWordsIdx < num_words){
+//         foundPipe = strchr(line_words[lineWordsIdx], '|') == NULL ? false : true;
+//         if (!foundPipe){
+//             //strcpy( simpleCommand[simpleCommandRunningLength], *line_words[lineWordsIdx]);
+//             simpleCommand[simpleCommandRunningLength] = *line_words[lineWordsIdx];   
+//             simpleCommandRunningLength++; 
+//         } 
+//         else {
+//             simpleCommand[simpleCommandRunningLength] = '\0'; 
+//             command->args[commandIdxToInsert] = simpleCommand;
+//             commandIdxToInsert++;
+//             simpleCommandRunningLength = 0;
+//             strcpy(simpleCommand,"");
+//         }
+//         lineWordsIdx++;
+//     }
+//     simpleCommand[simpleCommandRunningLength] = *line_words[lineWordsIdx];   
+//     command->args[commandIdxToInsert] = simpleCommand;
+//     free(simpleCommand);
+
+
+//     int pfd[number_Of_Pipes*2]; // read end and write end for each pipe
+//     pid_t pid;
+
+//     for(int pfdIdx = 0; pfdIdx < number_Of_Pipes; pfdIdx += 2) // pipes pfd(0), pfd(2), pfd(4), ... , pfd(number_Of_Pipes*2)
+//         if (pipe(pfd + pfdIdx) == -1)
+//         syserror( "Could not create a pipe" );
+
+    
+//     for (int commandIdx = 0; commandIdx < number_Of_Pipes; commandIdx++){
+
+//     }
+//     switch ( pid = fork() ) {
+//         case -1: 
+//             syserror("First fork failed");
+//             break;
+//         case  0: 
+//             if (close(0) == -1)
+//                 syserror("Could not close stdin");
+//             dup(pfd[0]);
+//             if (close(pfd[0]) == -1 || close(pfd[1]) == -1)
+//                 syserror( "Could not close pfds from first child" );
+//             execlp(line_words[0], line_words[0], NULL);
+//             syserror("Could not exec line_words[0]");
+//             break;
+//         default:
+//             fprintf(stderr, "The first child's pid is: %d\n", pid);
+//             break;
+//     }
+
+//     switch ( pid = fork() ) {
+//         printf("Inside the second fork()\n");
+//         case -1: 
+//             syserror( "Second fork failed" );
+//             break;
+//         case  0: 
+//             if (close(1) == -1)
+//                 syserror("Could not close stdout");
+//             dup(pfd[1]);
+//             if (close(pfd[0]) == -1 || close(pfd[1]) == -1)
+//                 syserror( "Could not close pfds from second child" );
+//             execlp(line_words[1], line_words[1], NULL);
+//             syserror( "Could not exec line_words[1]" );
+//             break;
+//         default:
+//             fprintf(stderr, "The second child's pid is: %d\n", pid);
+//             break;
+//     }
+    
+//     if (close(pfd[0]) == -1)
+//         syserror( "Parent could not close stdin" );
+//     if (close(pfd[1]) == -1)
+//         syserror( "Parent could not close stdout" );
+
+//     while ( wait(NULL) != -1)
+//         ;
+// }
+
+
+void syserror(const char *s)
+{
+    extern int errno;
+    fprintf(stderr, "%s\n", s);
+    fprintf(stderr, " (%s)\n", strerror(errno));
+    exit(1);
+}
+
+
+
 >>>>>>> Stashed changes

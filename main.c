@@ -34,7 +34,8 @@ int main() {
     printf("Conch Shell: ");                            // Loop until user hits Ctrl-D (end of input) or other input error
     while( fgets(line, MAX_LINE_CHARS, stdin) ) {
         
-        if (line[strlen(line)-1] == '\n')               // Delete the new line character from end of line if present   
+        if (line[strlen(line)-1] == '\n')               // Delete the new line character from end of line if present   z
+
             line[strlen(line)-1] = '\0';    
         int num_words = split_cmd_line(line, line_words);                     // Num words (including pipes) in line_words
         printf("Num Words: %d\n", num_words);
@@ -43,9 +44,20 @@ int main() {
         int number_Of_Pipes = 0;
         number_Of_Pipes = pipeCount(line_words, num_words);
 
+        char **ArgV;
+        pipePrep(line_words, ArgV, num_words);
+        printLineWords(ArgV, num_words);
+
+
         runSimpleCommands();
         runRedirects();
+<<<<<<< Updated upstream
         runPipes();
+>>>>>>> Stashed changes
+=======
+        int i = 0;
+      i = runPipes(ArgV, num_words, number_Of_Pipes);
+        printf("Conch Shell: ");
 >>>>>>> Stashed changes
     }
     return 0;

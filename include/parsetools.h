@@ -24,6 +24,7 @@ int split_cmd_line(char* line, char** list_to_populate);
 int pipeCount(char** line_words, int numberOfWords);
 int check_command(char* line_words, int num_words);
 void printLineWords(char** line_words, int num_words);
+void pipePrep(char** line_words, char** arrayToReturn, int num_words);
 void runSimpleCommands();
 void runRedirects();
 void runPipes();
