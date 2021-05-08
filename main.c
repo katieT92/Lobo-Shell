@@ -21,33 +21,26 @@ int main() {
     char* pipeLHS[MAX_LINE_WORDS + 1];
     char* pipeRHS[MAX_LINE_WORDS + 1];
 
-<<<<<<< Updated upstream
     printf("Conch Shell: ");                            // Loop until user hits Ctrl-D (end of input) or other input error
-=======
->>>>>>> Stashed changes
     while( fgets(line, MAX_LINE_CHARS, stdin) ) {
-        
         if (line[strlen(line)-1] == '\n')               // Delete the new line character from end of line if present   
             line[strlen(line)-1] = '\0';    
         int num_words = split_cmd_line(line, line_words);                     // Num words (including pipes) in line_words
-<<<<<<< Updated upstream
-        printf("Num Words: %d\n", num_words);
-        //printLineWords(line_words, num_words);              // This was used as an example to show passing a char* as a char**
-=======
->>>>>>> Stashed changes
 
         int number_Of_Pipes = 0;
         number_Of_Pipes = pipeCount(line_words, num_words);
 
         runSimpleCommands();
         runRedirects();
-<<<<<<< Updated upstream
-        int i = 0;
-        i = runPipes(line_words, num_words, number_Of_Pipes);
-=======
-        runPipes(line_words, num_words, number_Of_Pipes);
+
+        //char **ArgV;
+        char **ArgV = malloc(sizeof(char*)*(num_words+1));
+        pipePrep(line_words, ArgV, num_words+1);
+       // printLineWords(ArgV, num_words);
+        // printLineWords(ArgV, num_words+1);
+        runPipes(ArgV, num_words, number_Of_Pipes);
+        free(ArgV);
         printf("Conch Shell: ");                            // Loop until user hits Ctrl-D (end of input) or other input error
->>>>>>> Stashed changes
     }
     return 0;
 }

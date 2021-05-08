@@ -15,24 +15,15 @@
 //    separated by whitespace.
 // Returns the number of words
 //
+
 int split_cmd_line(char* line, char** list_to_populate);
 int pipeCount(char** line_words, int numberOfWords);
-<<<<<<< Updated upstream
-int check_command(char** line_words, int num_words);
-void printLineWords(char** line_words, int num_words);
-void runSimpleCommands();
-void runRedirects();
-int runPipes();
-=======
 //int check_command(char** line_words, int num_words);
 void printLineWords(char** line_words, int num_words);
 void runSimpleCommands();
 void runRedirects();
-void runPipes();
-void createProcess (int input, int output, char** command);
+void runPipes(char** commands, int num_words, int number_Of_Pipes);   
+void pipePrep(char** words_array, char** arrayToReturn, int num_words);
 
-
-
->>>>>>> Stashed changes
 
 #endif
