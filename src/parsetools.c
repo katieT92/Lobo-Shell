@@ -1,26 +1,9 @@
-#include <stdio.h>
-#include <string.h>
-#include "constants.h"
 #include "parsetools.h"
 
 
-
-<<<<<<< Updated upstream
-// Parse a command line into a list of words,
-//    separated by whitespace.
-// Returns the number of words
-//
-int split_cmd_line(ch#include "constants.h"
-#include "parsetools.h"
+void syserror(const char *);
 
 
-
-// Parse a command line into a list of words,
-//    separated by whitespace.
-// Returns the number of words
-//
-=======
->>>>>>> Stashed changes
 int split_cmd_line(char* line, char** list_to_populate) {
    char* saveptr;  // for strtok_r; see http://linux.die.net/man/3/strtok_r
    char* delimiters = " \t\n"; // whitespace
@@ -35,158 +18,49 @@ int split_cmd_line(char* line, char** list_to_populate) {
    return i;
 }
 
-//IN: Char ** , int
+//IN: Char *
 //OUT: Integer
-//checks and counts number of | symbols  in the line_words array based on the number of words in that array.
+//checks if there is a pipe, if there is, will request the number of pipes in the line from countPipe
 //If there are no pipes will return 0
 //If there are pipes, will return the number of pipes found.
-int pipeCount(char** line_words, int numberOfWords){
+void pipeCount(struct Data_IDK **shell_struct){
     int pipeCount = 0;
-    for(int i = 0; i < numberOfWords; i++){
-        if(strchr(line_words[i], '|') != NULL){
-            if((strlen(line_words[i])) == 1){
-                pipeCount++;
-            }
+    for(int i = 0; i < shell_struct->num_words; i++){
+        if(strchr(shell_struct->line_words[i], '|') != NULL){
+            pipeCount++;
         }
     }
-    return pipeCount;
+    shell_struct->numPipes = pipeCount;
 }
 
-<<<<<<< Updated upstream
-int check_command(char* line_words){
-    int command = 0;
-    
-    for (int i=0; i < sizeof(line_words); i++) {
-        if (line_words[i] == 32 || line_words[i] == 45){       // If value at i is a space, '-', and possibly '|'
-            break;
-        }
-        command += line_words[i];
-    }
-
-    //printf("command value: %d\n", command);
-
-    switch (command) {
-        // Sometimes the first comman entered returns a different value than it does if entered after the first.
-        // Seems to work better if you use a comman that starts with w?
-        // Maybe some way to send a dummy value first to make it working
-        // Or just scrap this idea of checking ascii value of command 
-=======
-
-void printLineWords(char** line_words, int num_words){
-    for (int i=0; i < num_words; i++) {
-        printf("Line Words: %s\n", line_words[i]);
-    }
-    printf("DONE WITH PRINTLINEWORDS\n");
-}
-
-
-void runSimpleCommands(char** commands){
-    pid_t pid;
-    switch (pid = fork()) {
->>>>>>> Stashed changes
-        case -1: 
-            break;
-<<<<<<< Updated upstream
-        case  350: 
-            printf("EXECUTE ls COMMAND\n");
-
-            // https://support.sas.com/documentation/onlinedoc/sasc/doc/lr2/execv.htm
-            pid_t pid;
-            //char *const parmList[] = {"/bin/ls", "-l", "/u/userid/dirname", NULL};
-            char *const parmList[] = {"/bin/ls"};
-            if ((pid = fork()) == -1)
-                perror("fork error");
-            else if (pid == 0) {
-                execv("/bin/ls", parmList);
-                printf("Return not expected. Must be an execv error.n");
-            }
-            
-            break;
-        case  354: 
-            printf("EXECUTE ps COMMAND\n");
-            break;
-        case  461: 
-            printf("EXECUTE who COMMAND\n");
-            break;
-        case  345: 
-            printf("EXECUTE wc COMMAND\n");
-            break;
-        case  357: 
-            printf("EXECUTE tr COMMAND\n");
-            break;
-        case  439: 
-            printf("EXECUTE cat COMMAND\n");
-            break;
-=======
-        case  0: 
-            // if (input != 0) {
-            //     dup2 (input, 0);
-            //     close (input);
-            // }
-            // if (output != 1) {
-            //     dup2 (output, 1);
-            //     close (output);
-            // }
-            
-            execvp(commands[0], commands);
->>>>>>> Stashed changes
-        default:
-            break;
-    }
-<<<<<<< Updated upstream
-=======
-    while (wait(NULL) != -1); 
-    //return pid;
->>>>>>> Stashed changes
-}
-ar* line, char** list_to_populate) {
-   char* saveptr;  // for strtok_r; see http://linux.die.net/man/3/strtok_r
-   char* delimiters = " \t\n"; // whitespace
-   int i = 0;
-
-<<<<<<< Updated upstream
-   list_to_populate[0] = strtok_r(line, delimiters, &saveptr);
-=======
-void runRedirects(){    //https://stackoverflow.com/questions/11515399/implementing-shell-in-c-and-need-help-handling-input-output-redirection
-    char direction = '<';
-    if(direction == '<'){
-        fd = open(command, O_RDONLY, 0);
-        dup2(fd, STDIN_FILENO);
-        in = 0;
-        current_in = dup(0);  // Fix for symmetry with second paragraph
-    }
-    else if (direction == ' >'){
-        fd = creat(output, 0644);
-        dup2(fd, STDOUT_FILENO);
-        out = 0;
-        current_out = dup(1);
-    }
-}
->>>>>>> Stashed changes
-
-   while(list_to_populate[i] != NULL && i < MAX_LINE_WORDS - 1)  {
-       list_to_populate[++i] = strtok_r(NULL, delimiters, &saveptr);
-   };
-
-<<<<<<< Updated upstream
-   return i;
-}
-=======
-// Creates a char* array of line_words
-void pipePrep(char** words_array, char** arrayToReturn, int num_words){
-    for(int i = 0; i < num_words; i++){
-        if(i < num_words - 1 && strchr(words_array[i], '|') == NULL)                 // If not last command and not a pipe
-            arrayToReturn[i] = words_array[i];                                       // Append word
-        else if (i == num_words - 1 || strchr(words_array[i], '|') != NULL)        // If last command or is pipe
-            arrayToReturn[i] = NULL;                                                 // Append null
+void pipePrep(struct Data_IDK **shell_struct){
+    for(int i = 0; i < shell_struct->num_words; i++){
+        if(i < shell_struct->num_words - 1 && strchr(shell_struct->line_words[i], '|') == NULL)                 // If not last command and not a pipe
+            shell_struct->ArgV_S[i] = shell_struct->line_words[i];                                       // Append word
+        else if (i == shell_struct->num_words - 1 || strchr(shell_struct->line_words[i], '|') != NULL)        // If last command or is pipe
+            shell_struct->ArgV_S[i] = NULL;                                                 // Append null
         // else if ( > or >> or < or <<)
             // do something? Maybe we need a differnt funciton to handle redirections.  
     }
 }
 
+void runSimpleCommands(struct Data_IDK shell_struct){
+    pid_t pid;
+    switch (pid = fork()) {
+        case -1: 
+            syserror("First fork failed");
+            break;
+        case  0: 
+            execvp(shell_struct.ArgV_S[0], shell_struct.ArgV_S);
+        default:
+            fprintf(stderr, "The first child's pid is: %d\n", pid);
+            break;
+    }
+    while (wait(NULL) != -1); 
+}
 
-void runPipes(char** commands, int num_words, int number_Of_Pipes){        
-    int numCommands = number_Of_Pipes + 1;                                          // Used for pipe loop variable
+void runPipes(struct Data_IDK shell_struct){        
+    int numCommands = shell_struct.numPipes + 1;                                          // Used for pipe loop variable
     int endNullSearchIdx = 0;                                                       // Idx for end of current command in "commands"
     int startNullSearchIdx = endNullSearchIdx;                                      // Idx for start of current command in "commands" 
     int pfd[2];                                                                     // Read(0) and write(1) ends of pipe
@@ -199,12 +73,12 @@ void runPipes(char** commands, int num_words, int number_Of_Pipes){
 
         // START GET SINGLE COMMMAND FROM COMMANDS TO PASS TO EXEC
         int commandInsertIdx = 0;                                                   // Will always insert into "command" starting at idx 0 
-        while (endNullSearchIdx <= num_words && commands[endNullSearchIdx])         // Find next null for current command in "commands"           
+        while (endNullSearchIdx <= shell_struct.num_words && shell_struct.ArgV_S[endNullSearchIdx])         // Find next null for current command in "commands"           
             endNullSearchIdx++;
         endNullSearchIdx++;
         char *command[(endNullSearchIdx-startNullSearchIdx)*sizeof(char*)];         // Create "command" to hold current command in "commands"
         while (startNullSearchIdx < endNullSearchIdx){                              // Current command length in these bounds of "commands"
-            command[commandInsertIdx] = commands[startNullSearchIdx];               // Insert word into "command" always starting at 0
+            command[commandInsertIdx] = shell_struct.ArgV_S[startNullSearchIdx];               // Insert word into "command" always starting at 0
             commandInsertIdx++;
             startNullSearchIdx++;
         }
@@ -262,6 +136,36 @@ void runPipes(char** commands, int num_words, int number_Of_Pipes){
     while (wait(NULL) != -1);                                                           // Reap all the child processes!
 }
 
+void printLineWords(struct Data_IDK shell_struct){
+    for (int i=0; i < shell_struct.num_words; i++) {
+        printf("Line Words: %s\n", shell_struct.line_words[i]);
+    }
+    printf("DONE WITH PRINTLINEWORDS\n");
+}
+
+void printArgv(struct Data_IDK shell_struct){
+    for (int i=0; i < shell_struct.num_words+1; i++) {
+        printf("Argv Words: %s\n", shell_struct.ArgV_S[i]);
+    }
+    printf("DONE WITH PRINTARGV\n");
+}
+
+void runRedirects(struct Data_IDK shell_struct){    //https://stackoverflow.com/questions/11515399/implementing-shell-in-c-and-need-help-handling-input-output-redirection
+    // char direction = '<';
+    // if(direction == '<'){
+    //     fd = open(command, O_RDONLY, 0);
+    //     dup2(fd, STDIN_FILENO);
+    //     in = 0;
+    //     current_in = dup(0);  // Fix for symmetry with second paragraph
+    // }
+    // else if (direction == ' >'){
+    //     fd = creat(output, 0644);
+    //     dup2(fd, STDOUT_FILENO);
+    //     out = 0;
+    //     current_out = dup(1);
+    // }
+    exit;
+}
 
 
 void syserror(const char *s){
@@ -270,4 +174,3 @@ void syserror(const char *s){
     fprintf(stderr, " (%s)\n", strerror(errno));
     exit(1);
 }
->>>>>>> Stashed changes
