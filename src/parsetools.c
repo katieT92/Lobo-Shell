@@ -1,7 +1,5 @@
 #include "parsetools.h"
-#include <stdbool.h>
 
-void syserror(const char *);
 
 void syserror(const char *);
 
@@ -25,7 +23,6 @@ int split_cmd_line(char* line, char** list_to_populate) {
 //checks if there is a pipe, if there is, will request the number of pipes in the line from countPipe
 //If there are no pipes will return 0
 //If there are pipes, will return the number of pipes found.
-
 void pipeCount(struct Data_IDK *shell_struct){
     int pipeCount = 0;
     for(int i = 0; i < shell_struct->num_words; i++){
@@ -40,14 +37,47 @@ void pipePrep(struct Data_IDK *shell_struct){
     int numberOfWords;
     numberOfWords = shell_struct->num_words;
     numberOfWords++;
+    int A[shell_struct->num_words];
+    char* B[shell_struct->num_words];
+    char* C[shell_struct->num_words];
+    char* D[shell_struct->num_words];
+    int a, b, c, d = 0;
+    printf("%d  %d  %d  %d", a, b, c, d);
+
     for(int i = 0; i < numberOfWords; i++){
         if(i < numberOfWords - 1 && strchr(shell_struct->line_words[i], '|') == NULL)                 // If not last command and not a pipe
             shell_struct->ArgV_S[i] = shell_struct->line_words[i];                                       // Append word
         else if (i == numberOfWords - 1 || strchr(shell_struct->line_words[i], '|') != NULL)        // If last command or is pipe
             shell_struct->ArgV_S[i] = NULL;                                                 // Append null
-        // else if ( > or >> or < or <<)
+        else if (*shell_struct->line_words[i] == '>'){
+            A[a] = i;
+            a++;
+        }
+        // else if (*shell_struct->line_words[i] == '<'){
+        //     B[b] = i;
+        //     b++;
+        // }
+        // else if (*shell_struct->line_words[i] == ">>"){
+        //     C[c] = i;
+        //     c++;
+        // }
+        // else if(*shell_struct->line_words[i] == "<<"){
+        //     D[d] = i;
+        //     d++;
+        // }
             // do something? Maybe we need a differnt funciton to handle redirections.  
     }
+    
+    shell_struct->RedirectOutIndexList = (char *) malloc(sizeof (char) * a);
+    // shell_struct->AppendOutIndexList = (char *) malloc(sizeof(char) * a);
+    // shell_struct->AppendInIndexList.malloc(sizeof(char*)*(a));
+    // shell_struct->RedirectOutIndexList[c];
+
+    memcpy(shell_struct->AppendOutIndexList, A, a);
+    // memcpy(shell_struct->AppendInIndexList, B, b);
+    // memcpy(shell_struct->RedirectOutIndexList, C, c);
+    // memcpy(shell_struct->RedirectInIndexList, D, d);
+
 }
 
 void runSimpleCommands(struct Data_IDK shell_struct){
@@ -67,7 +97,6 @@ void runSimpleCommands(struct Data_IDK shell_struct){
 
 void runPipes(struct Data_IDK shell_struct){        
     int numCommands = shell_struct.numPipes + 1;                                          // Used for pipe loop variable
-
     int endNullSearchIdx = 0;                                                       // Idx for end of current command in "commands"
     int startNullSearchIdx = endNullSearchIdx;                                      // Idx for start of current command in "commands" 
     int pfd[2];                                                                     // Read(0) and write(1) ends of pipe
@@ -80,16 +109,12 @@ void runPipes(struct Data_IDK shell_struct){
 
         // START GET SINGLE COMMMAND FROM COMMANDS TO PASS TO EXEC
         int commandInsertIdx = 0;                                                   // Will always insert into "command" starting at idx 0 
-
         while (endNullSearchIdx <= shell_struct.num_words && shell_struct.ArgV_S[endNullSearchIdx])         // Find next null for current command in "commands"           
-
             endNullSearchIdx++;
         endNullSearchIdx++;
         char *command[(endNullSearchIdx-startNullSearchIdx)*sizeof(char*)];         // Create "command" to hold current command in "commands"
         while (startNullSearchIdx < endNullSearchIdx){                              // Current command length in these bounds of "commands"
-
             command[commandInsertIdx] = shell_struct.ArgV_S[startNullSearchIdx];               // Insert word into "command" always starting at 0
-
             commandInsertIdx++;
             startNullSearchIdx++;
         }
@@ -147,7 +172,6 @@ void runPipes(struct Data_IDK shell_struct){
     while (wait(NULL) != -1);                                                           // Reap all the child processes!
 }
 
-
 void printLineWords(struct Data_IDK shell_struct){
     for (int i=0; i < shell_struct.num_words; i++) {
         printf("Line Words: %s\n", shell_struct.line_words[i]);
@@ -163,22 +187,35 @@ void printArgv(struct Data_IDK shell_struct){
 }
 
 void runRedirects(struct Data_IDK shell_struct){    //https://stackoverflow.com/questions/11515399/implementing-shell-in-c-and-need-help-handling-input-output-redirection
-    // char direction = '<';
-    // if(direction == '<'){
-    //     fd_in = open(shell_struct->linewords, O_RDONLY, 0);
-    //     dup2(fd, STDIN_FILENO);
-    //     in = 0;
-    //     current_in = dup(0);  // Fix for symmetry with second paragraph
-    // }
-    // else if (direction == ' >'){
-    //     fd = creat(output, 0644);
-    //     dup2(fd, STDOUT_FILENO);
-    //     out = 0;
-    //     current_out = dup(1);
+    // int pid = fork();
+
+    // if (pid == -1) {
+    //     perror("fork");
+    // } else if (pid == 0) {   
+
+    //     if (in) { //if '<' char was found in string inputted by user
+    //         int fd0 = open(input, O_RDONLY, 0);
+    //         dup2(fd0, STDIN_FILENO);
+    //         close(fd0);
+    //         in = 0;
+    //     }
+
+    //     if (out) { //if '>' was found in string inputted by user
+    //         int fd1 = creat(output, 0644);
+    //         dup2(fd1, STDOUT_FILENO);
+    //         close(fd1);
+    //         out = 0;
+    //     }   
+
+    //     execvp(res[0], res);
+    //     perror("execvp");
+    //     _exit(1);
+    // } else {
+    //     waitpid(pid, 0, 0);
+    //     free(res);
     // }
     exit;
 }
-
 
 
 void syserror(const char *s){
