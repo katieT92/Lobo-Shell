@@ -1,5 +1,7 @@
 #include "parsetools.h"
+#include <stdbool.h>
 
+void syserror(const char *);
 
 void syserror(const char *);
 
@@ -23,6 +25,7 @@ int split_cmd_line(char* line, char** list_to_populate) {
 //checks if there is a pipe, if there is, will request the number of pipes in the line from countPipe
 //If there are no pipes will return 0
 //If there are pipes, will return the number of pipes found.
+
 void pipeCount(struct Data_IDK *shell_struct){
     int pipeCount = 0;
     for(int i = 0; i < shell_struct->num_words; i++){
@@ -64,6 +67,7 @@ void runSimpleCommands(struct Data_IDK shell_struct){
 
 void runPipes(struct Data_IDK shell_struct){        
     int numCommands = shell_struct.numPipes + 1;                                          // Used for pipe loop variable
+
     int endNullSearchIdx = 0;                                                       // Idx for end of current command in "commands"
     int startNullSearchIdx = endNullSearchIdx;                                      // Idx for start of current command in "commands" 
     int pfd[2];                                                                     // Read(0) and write(1) ends of pipe
@@ -76,12 +80,16 @@ void runPipes(struct Data_IDK shell_struct){
 
         // START GET SINGLE COMMMAND FROM COMMANDS TO PASS TO EXEC
         int commandInsertIdx = 0;                                                   // Will always insert into "command" starting at idx 0 
+
         while (endNullSearchIdx <= shell_struct.num_words && shell_struct.ArgV_S[endNullSearchIdx])         // Find next null for current command in "commands"           
+
             endNullSearchIdx++;
         endNullSearchIdx++;
         char *command[(endNullSearchIdx-startNullSearchIdx)*sizeof(char*)];         // Create "command" to hold current command in "commands"
         while (startNullSearchIdx < endNullSearchIdx){                              // Current command length in these bounds of "commands"
+
             command[commandInsertIdx] = shell_struct.ArgV_S[startNullSearchIdx];               // Insert word into "command" always starting at 0
+
             commandInsertIdx++;
             startNullSearchIdx++;
         }
@@ -139,6 +147,7 @@ void runPipes(struct Data_IDK shell_struct){
     while (wait(NULL) != -1);                                                           // Reap all the child processes!
 }
 
+
 void printLineWords(struct Data_IDK shell_struct){
     for (int i=0; i < shell_struct.num_words; i++) {
         printf("Line Words: %s\n", shell_struct.line_words[i]);
@@ -169,6 +178,7 @@ void runRedirects(struct Data_IDK shell_struct){    //https://stackoverflow.com/
     // }
     exit;
 }
+
 
 
 void syserror(const char *s){
