@@ -23,7 +23,7 @@ int split_cmd_line(char* line, char** list_to_populate) {
 //checks if there is a pipe, if there is, will request the number of pipes in the line from countPipe
 //If there are no pipes will return 0
 //If there are pipes, will return the number of pipes found.
-void pipeCount(struct Data_IDK **shell_struct){
+void pipeCount(struct Data_IDK *shell_struct){
     int pipeCount = 0;
     for(int i = 0; i < shell_struct->num_words; i++){
         if(strchr(shell_struct->line_words[i], '|') != NULL){
@@ -33,11 +33,14 @@ void pipeCount(struct Data_IDK **shell_struct){
     shell_struct->numPipes = pipeCount;
 }
 
-void pipePrep(struct Data_IDK **shell_struct){
-    for(int i = 0; i < shell_struct->num_words; i++){
-        if(i < shell_struct->num_words - 1 && strchr(shell_struct->line_words[i], '|') == NULL)                 // If not last command and not a pipe
+void pipePrep(struct Data_IDK *shell_struct){
+    int numberOfWords;
+    numberOfWords = shell_struct->num_words;
+    numberOfWords++;
+    for(int i = 0; i < numberOfWords; i++){
+        if(i < numberOfWords - 1 && strchr(shell_struct->line_words[i], '|') == NULL)                 // If not last command and not a pipe
             shell_struct->ArgV_S[i] = shell_struct->line_words[i];                                       // Append word
-        else if (i == shell_struct->num_words - 1 || strchr(shell_struct->line_words[i], '|') != NULL)        // If last command or is pipe
+        else if (i == numberOfWords - 1 || strchr(shell_struct->line_words[i], '|') != NULL)        // If last command or is pipe
             shell_struct->ArgV_S[i] = NULL;                                                 // Append null
         // else if ( > or >> or < or <<)
             // do something? Maybe we need a differnt funciton to handle redirections.  
@@ -153,7 +156,7 @@ void printArgv(struct Data_IDK shell_struct){
 void runRedirects(struct Data_IDK shell_struct){    //https://stackoverflow.com/questions/11515399/implementing-shell-in-c-and-need-help-handling-input-output-redirection
     // char direction = '<';
     // if(direction == '<'){
-    //     fd = open(command, O_RDONLY, 0);
+    //     fd_in = open(shell_struct->linewords, O_RDONLY, 0);
     //     dup2(fd, STDIN_FILENO);
     //     in = 0;
     //     current_in = dup(0);  // Fix for symmetry with second paragraph
