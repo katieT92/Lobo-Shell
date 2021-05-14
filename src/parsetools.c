@@ -34,57 +34,47 @@ void pipeCount(struct Data_IDK *shell_struct){
 }
 
 void pipePrep(struct Data_IDK *shell_struct){
+
+    shell_struct->in = NULL;
+    shell_struct->out = NULL;
+    shell_struct->appendIn = NULL;
+    shell_struct->appendOut = NULL;
+
     int numberOfWords;
     numberOfWords = shell_struct->num_words;
     numberOfWords++;
-    int A[shell_struct->num_words];
-    char* B[shell_struct->num_words];
-    char* C[shell_struct->num_words];
-    char* D[shell_struct->num_words];
-    int a, b, c, d = 0;
-    printf("%d  %d  %d  %d", a, b, c, d);
+
 
     for(int i = 0; i < numberOfWords; i++){
-        if(i < numberOfWords - 1 && strchr(shell_struct->line_words[i], '|') == NULL)                 // If not last command and not a pipe
-            shell_struct->ArgV_S[i] = shell_struct->line_words[i];                                       // Append word
-        else if (i == numberOfWords - 1 || strchr(shell_struct->line_words[i], '|') != NULL)        // If last command or is pipe
-            shell_struct->ArgV_S[i] = NULL;                                                 // Append null
-        else if (*shell_struct->line_words[i] == '>'){
-            A[a] = i;
-            a++;
-        }
-        // else if (*shell_struct->line_words[i] == '<'){
-        //     B[b] = i;
-        //     b++;
-        // }
-        // else if (*shell_struct->line_words[i] == ">>"){
-        //     C[c] = i;
-        //     c++;
-        // }
-        // else if(*shell_struct->line_words[i] == "<<"){
-        //     D[d] = i;
-        //     d++;
-        // }
-            // do something? Maybe we need a differnt funciton to handle redirections.  
+        if(i == numberOfWords - 1 || strchr(shell_struct->line_words[i], '|') != NULL) {        // If last command or is pipe
+            shell_struct->ArgV_S[i] = NULL;
+        }else if(strcmp(shell_struct->line_words[i], "<<") == 0){
+            shell_struct->ArgV_S[i] = NULL;
+            shell_struct->appendIn = shell_struct->line_words[i + 1];
+            printf("appendIn Caught: %s\n", shell_struct->appendIn );
+        }else if(strcmp(shell_struct->line_words[i], ">>") == 0){
+            shell_struct->ArgV_S[i] = NULL;
+            shell_struct->appendOut = shell_struct->line_words[i + 1];
+            printf("appendOut Caught: %s\n", shell_struct->appendOut );
+        }else if (strchr(shell_struct->line_words[i], '>') != NULL){
+                shell_struct->ArgV_S[i] = NULL;
+                shell_struct->out = shell_struct->line_words[i + 1];
+            printf("in Caught: %s\n", shell_struct->in );
+        }else if(strchr(shell_struct->line_words[i], '<') != NULL){
+                shell_struct->ArgV_S[i] = NULL;
+                shell_struct->in = shell_struct->line_words[i + 1];
+            printf("out Caught: %s\n", shell_struct->out );
+        }else if( i < numberOfWords - 1 && strchr(shell_struct->line_words[i], '|') == NULL) {                 // If not last command and not a pipe
+            shell_struct->ArgV_S[i] = shell_struct->line_words[i];
+        }// Append word
     }
-    
-    shell_struct->RedirectOutIndexList = (char *) malloc(sizeof (char) * a);
-    // shell_struct->AppendOutIndexList = (char *) malloc(sizeof(char) * a);
-    // shell_struct->AppendInIndexList.malloc(sizeof(char*)*(a));
-    // shell_struct->RedirectOutIndexList[c];
-
-    memcpy(shell_struct->AppendOutIndexList, A, a);
-    // memcpy(shell_struct->AppendInIndexList, B, b);
-    // memcpy(shell_struct->RedirectOutIndexList, C, c);
-    // memcpy(shell_struct->RedirectInIndexList, D, d);
-
 }
 
 void runSimpleCommands(struct Data_IDK shell_struct){
     pid_t pid;
     switch (pid = fork()) {
         case -1: 
-            syserror("First fork failed");
+            syserror("First fork failed\n");
             break;
         case  0: 
             execvp(shell_struct.ArgV_S[0], shell_struct.ArgV_S);
@@ -113,7 +103,9 @@ void runPipes(struct Data_IDK shell_struct){
             endNullSearchIdx++;
         endNullSearchIdx++;
         char *command[(endNullSearchIdx-startNullSearchIdx)*sizeof(char*)];         // Create "command" to hold current command in "commands"
-        while (startNullSearchIdx < endNullSearchIdx){                              // Current command length in these bounds of "commands"
+        while (startNullSearchIdx < endNullSearchIdx){
+         // Current command length in these bounds of "commands"
+           // Current command length in these bounds of "commands"
             command[commandInsertIdx] = shell_struct.ArgV_S[startNullSearchIdx];               // Insert word into "command" always starting at 0
             commandInsertIdx++;
             startNullSearchIdx++;
@@ -138,7 +130,7 @@ void runPipes(struct Data_IDK shell_struct){
                 }
                 else if (i < numCommands - 1){                                          // A middle command in allCommands
                     if (close(0) == -1)                                                 // Close fd for stdin
-                        printf("Could not close stdin from child.");
+                        printf("Could not close stdin from child.\n");
                     dup2(oldFd, 0);                                                     // Point fd for stdin at previous read end of pipe
                     dup2(pfd[1], 1);                                                    // Point fd for stdout at write end of pipe
                     execvp(command[0],  command); 

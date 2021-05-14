@@ -22,21 +22,18 @@ struct Data_IDK
 {
     int numPipes;
     int num_words;
-    // int numAppendIn;
-    // int numAppendOut;
-    // int numRedirectIn ;
-    // int numRedirectOut;
-    char* line_words[MAX_LINE_WORDS + 1]; 
-    char* AppendInIndexList;
-    char* AppendOutIndexList;
-    char* RedirectInIndexList;
-    char* RedirectOutIndexList;
+    char* line_words[MAX_LINE_WORDS + 1];
     char** ArgV_S;
+    char* in;
+    char* out;
+    char* appendIn;
+    char* appendOut;
+
+
 
 };
 
 int split_cmd_line(char* line, char** list_to_populate);
-
 void pipeCount(struct Data_IDK *shell_struct);
 void pipePrep(struct Data_IDK *shell_struct);
 void runSimpleCommands(struct Data_IDK shell_struct);
@@ -44,7 +41,6 @@ void runPipes(struct Data_IDK shell_struct);
 void printLineWords(struct Data_IDK shell_struct);
 void printArgv(struct Data_IDK shell_struct);
 void runRedirects(struct Data_IDK shell_struct);
-
 void syserror(const char *s);
 
 #endif
