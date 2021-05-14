@@ -36,17 +36,47 @@ void pipeCount(struct Data_IDK *shell_struct){
     shell_struct->numPipes = pipeCount;
 }
 
+void redirectCount(struct Data_IDK *shell_struct){
+    int redirectCount = 0;
+    for(int i = 0; i < shell_struct->num_words; i++){
+        if(strchr(shell_struct->line_words[i], '<') || strchr(shell_struct->line_words[i], '>') || strcmp(shell_struct->line_words[i], ">>") == 0){
+            redirectCount++;
+        }
+    }
+    shell_struct->num_redirects = redirectCount;
+}
+
 void pipePrep(struct Data_IDK *shell_struct){
     int numberOfWords;
     numberOfWords = shell_struct->num_words;
     numberOfWords++;
     for(int i = 0; i < numberOfWords; i++){
+<<<<<<< Updated upstream
         if(i < numberOfWords - 1 && strchr(shell_struct->line_words[i], '|') == NULL)                 // If not last command and not a pipe
             shell_struct->ArgV_S[i] = shell_struct->line_words[i];                                       // Append word
         else if (i == numberOfWords - 1 || strchr(shell_struct->line_words[i], '|') != NULL)        // If last command or is pipe
             shell_struct->ArgV_S[i] = NULL;                                                 // Append null
         // else if ( > or >> or < or <<)
             // do something? Maybe we need a differnt funciton to handle redirections.  
+=======
+        if(i == numberOfWords - 1 || strchr(shell_struct->line_words[i], '|') != NULL) {        // If last command or is pipe
+            shell_struct->ArgV_S[i] = NULL;
+        }else if(strcmp(shell_struct->line_words[i], ">>") == 0){
+            shell_struct->ArgV_S[i] = NULL;
+            shell_struct->appendOut = shell_struct->line_words[i + 1];
+            printf("appendOut Caught: %s\n", shell_struct->appendOut );
+        }else if (strchr(shell_struct->line_words[i], '>') != NULL){
+            shell_struct->ArgV_S[i] = NULL;                         //should this be NULL?
+            shell_struct->out = shell_struct->line_words[i + 1];
+            printf("out Caught: %s\n", shell_struct->out );
+        }else if(strchr(shell_struct->line_words[i], '<') != NULL){
+            shell_struct->ArgV_S[i] = NULL;
+            shell_struct->in = shell_struct->line_words[i + 1];
+            printf("in Caught: %s\n", shell_struct->in );
+        }else if( i < numberOfWords - 1 && strchr(shell_struct->line_words[i], '|') == NULL) {                 // If not last command and not a pipe
+            shell_struct->ArgV_S[i] = shell_struct->line_words[i];
+        }// Append word
+>>>>>>> Stashed changes
     }
 }
 
@@ -73,6 +103,7 @@ void runPipes(struct Data_IDK shell_struct){
     int pfd[2];                                                                     // Read(0) and write(1) ends of pipe
     pid_t pid;                                                                      // Process id
     int oldFd = 0;                                                                  // Reference to fd from a child p's parent's previous pipe. 
+    int fd_out;
 
     // START PIPE PROCESSES
     for (int i = 0; i < numCommands; i++){                                          // For each command
@@ -94,7 +125,6 @@ void runPipes(struct Data_IDK shell_struct){
             startNullSearchIdx++;
         }
         // END GET SINGLE COMMAND FROM COMMANDS TO PASS TO EXEC
-
 
         if (i < numCommands-1)                                                          // Don't pipe for last command
             pipe(pfd);                                                                  // Create pipe in parent
@@ -148,6 +178,172 @@ void runPipes(struct Data_IDK shell_struct){
 }
 
 
+<<<<<<< Updated upstream
+=======
+
+
+void runRedirects(struct Data_IDK shell_struct){   
+    int numCommands = shell_struct.num_redirects + 1;                                          // Used for pipe loop variable
+    int endNullSearchIdx = 0;                                                       // Idx for end of current command in "commands"
+    int startNullSearchIdx = endNullSearchIdx;                                      // Idx for start of current command in "commands" 
+    pid_t pid;                                                                      // Process id
+    shell_struct.line_words[shell_struct.num_words+1] = NULL;                          // In the case of JUST redirects
+    int fileDirect = 0;
+    char* redirectExec[2*sizeof(char*)];
+    redirectExec[0] = shell_struct.ArgV_S[0];
+    redirectExec[1] = NULL;
+ 
+    // START Redirect PROCESS                                                                   // For each command
+    switch(pid = fork()){     
+        case -1:                                                                    
+            printf("Fork %d failed.\n");
+            break;  
+        case 0:  
+            // START GET SINGLE COMMAND FROM COMMANDS TO PASS TO EXEC
+            printf("NUM COMMANDS In Input Command: %d\n", numCommands);
+            
+            for (int i = 0; i < numCommands; i++){  
+                printf("In iteration %d\n", i);
+                int commandInsertIdx = 0;                                                   
+                
+                while (endNullSearchIdx <= shell_struct.num_words && !strchr(shell_struct.line_words[endNullSearchIdx], '<') &&
+                !strchr(shell_struct.line_words[endNullSearchIdx], '>') &&
+                strcmp(shell_struct.line_words[endNullSearchIdx], ">>") != 0){
+                    endNullSearchIdx++;
+                }                
+                endNullSearchIdx++;
+                char *command[(endNullSearchIdx-startNullSearchIdx)*sizeof(char*)]; 
+
+                while (startNullSearchIdx < endNullSearchIdx){
+                    command[commandInsertIdx] = shell_struct.line_words[startNullSearchIdx];              
+                    commandInsertIdx++;
+                    startNullSearchIdx++;
+                }
+                // END GET SINGLE COMMAND FROM COMMANDS TO PASS TO EXEC
+                fileDirect += commandInsertIdx;                             // File to write, read or append to/from
+
+                printf("WER HIT RIGHT ABOVE THE IF STATMENT\n");
+                if (strchr(command[commandInsertIdx], '<')){                 // This will be the last element in command (a redirect)
+                    printf("command[-1] = %s\n", command[commandInsertIdx]);
+                    int fd0;
+                    fd0 = open(shell_struct.line_words[fileDirect], O_RDONLY);
+                    dup2(fd0, 0);
+                    close(fd0);
+                }
+                else if (strchr(command[commandInsertIdx], '>')) {
+                    printf("command[-1] = %s\n", command[commandInsertIdx]);
+                    int fd1;
+                    fd1 = open(shell_struct.line_words[fileDirect], O_RDONLY | O_CREAT, 1);
+                    dup2(fd1, 1);
+                    close(fd1);     
+                }
+                else{
+                    printf("command[-1] = %s\n", command[commandInsertIdx]);
+                    int fd1;
+                    fd1 = open(shell_struct.line_words[fileDirect], O_RDWR | O_CREAT | O_APPEND, 1);
+                    dup2(fd1, 1);
+                    close(fd1);
+                }
+                printf("WE HIT RIGHT AFTER THE IF STATEMENT. entering next for loop iteration if any.\n");
+            }  
+            execvp(redirectExec[0], redirectExec);
+        default:   
+            printf("In parent redirect");                                                            
+            while (wait(NULL) != -1);  
+    }                                        
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// void runRedirects(struct Data_IDK shell_struct){        
+//     int numCommands = shell_struct.numPipes + 1;                                          // Used for pipe loop variable
+//     int endNullSearchIdx = 0;                                                       // Idx for end of current command in "commands"
+//     int startNullSearchIdx = endNullSearchIdx;                                      // Idx for start of current command in "commands" 
+//     int pfd[2];                                                                     // Read(0) and write(1) ends of pipe
+//     pid_t pid;                                                                      // Process id
+//     int oldFd = 0;                                                                  // Reference to fd from a child p's parent's previous pipe. 
+//     // int fd_out;
+//     shell_struct.line_words[shell_struct.num_words] = NULL                          // In the case of JUST redirects
+
+//     int fileDirect = 0;
+
+//     // START PIPE PROCESSES
+//     for (int i = 0; i < numCommands; i++){                                          // For each command
+
+//         // START GET SINGLE COMMMAND FROM COMMANDS TO PASS TO EXEC
+//         int commandInsertIdx = 0;                                                   // Will always insert into "command" starting at idx 0 
+//         while (endNullSearchIdx <= shell_struct.num_words && !strchr(shell_struct.line_words[endNullSearchIdx], '<') &&
+//         !strchr(shell_struct.line_words[endNullSearchIdx], '>') && strcmp(shell_struct.line_words[endNullSearchIdx], "<<") != 0 &&
+//         strcmp(shell_struct.line_words[endNullSearchIdx], ">>") != 0)         // Find next null for current command in "commands"           
+//             endNullSearchIdx++;
+//         endNullSearchIdx++;
+//         char *command[(endNullSearchIdx-startNullSearchIdx)*sizeof(char*)];         // Create "command" to hold current command in "commands"
+//         while (startNullSearchIdx < endNullSearchIdx){
+//          // Current command length in these bounds of "commands"
+//            // Current command length in these bounds of "commands"
+//             command[commandInsertIdx] = shell_struct.line_words[startNullSearchIdx];               // Insert word into "command" always starting at 0
+//             commandInsertIdx++;
+//             startNullSearchIdx++;
+//         }
+//         fileDirect += commandInsertIdx;
+//         // END GET SINGLE COMMAND FROM COMMANDS TO PASS TO EXEC
+    
+//        // wc -l < /usr/share/dict/words < someFile
+
+//         switch(pid = fork()){                                                          
+//             case -1:                                                                    
+//                 printf("Fork %d failed.\n", i);
+//                 break;  
+//             case 0:  
+//                 switch(command[commandInsertIdx]){      // wc -l <
+//                     case "<":
+//                         printf("command[-1] = %s", command[commandInsertIdx])
+//                         int fd0 = open(line_words[fileDirect], O_RDONLY, 0);
+//                         dup2(fd0, 0);
+//                         close(fd0);
+//                     case ">":
+//                         printf("command[-1] = %s", command[commandInsertIdx])
+//                         int fd1 = open(line_words[fileDirect], O_RDONLY, 1);
+//                         dup2(fd1, 1);
+//                         close(fd1);
+//                     case "<<":
+//                         printf("command[-1] = %s", command[commandInsertIdx])
+//                         int fd0 = open(line_words[fileDirect], O_RDWR | O_CREAT, 0);
+//                         dup2(fd0, 0);
+//                         close(fd0);
+//                     case ">>":
+//                         printf("command[-1] = %s", command[commandInsertIdx])
+//                         int fd1 = open(line_words[fileDirect], O_RDWR | O_CREAT, 1);
+//                         dup2(fd1, 0);
+//                         close(fd1);
+//                 }                                                                   
+//                 // if (i == 0){                                                            
+//                 // }
+//                 // else if (i < numCommands - 1){                                                  
+//                 // }
+//                 // else                                                                                                
+//             default:                                                                    
+//                 if (i == 0)                                                             
+                                                                                        
+
+//                 else if (i < numCommands - 1)                                     
+     
+                
+//                 else                                                                         
+//     while (wait(NULL) != -1);                                                           
+// }
+
+
+>>>>>>> Stashed changes
 void printLineWords(struct Data_IDK shell_struct){
     for (int i=0; i < shell_struct.num_words; i++) {
         printf("Line Words: %s\n", shell_struct.line_words[i]);
@@ -162,6 +358,7 @@ void printArgv(struct Data_IDK shell_struct){
     printf("DONE WITH PRINTARGV\n");
 }
 
+<<<<<<< Updated upstream
 void runRedirects(struct Data_IDK shell_struct){    //https://stackoverflow.com/questions/11515399/implementing-shell-in-c-and-need-help-handling-input-output-redirection
     // char direction = '<';
     // if(direction == '<'){
@@ -178,6 +375,38 @@ void runRedirects(struct Data_IDK shell_struct){    //https://stackoverflow.com/
     // }
     exit;
 }
+=======
+// void runRedirects(struct Data_IDK shell_struct){    //https://stackoverflow.com/questions/11515399/implementing-shell-in-c-and-need-help-handling-input-output-redirection
+//     int pid = fork();
+
+//     if (pid == -1) {
+//         perror("fork");
+//     } else if (pid == 0) {   
+
+//         if (in) { //if '<' char was found in string inputted by user
+//             int fd0 = open(input, O_RDONLY, 0);
+//             dup2(fd0, STDIN_FILENO);
+//             close(fd0);
+//             in = 0;
+//         }
+
+//         if (out) { //if '>' was found in string inputted by user
+//             int fd1 = creat(output, 0644);
+//             dup2(fd1, STDOUT_FILENO);
+//             close(fd1);
+//             out = 0;
+//         }   
+
+//         execvp(res[0], res);
+//         perror("execvp");
+//         _exit(1);
+//     } else {
+//         waitpid(pid, 0, 0);
+//         free(res);
+//     }
+//     exit;
+// }
+>>>>>>> Stashed changes
 
 
 
@@ -187,3 +416,25 @@ void syserror(const char *s){
     fprintf(stderr, " (%s)\n", strerror(errno));
     exit(1);
 }
+
+
+
+
+
+// RUN OUTPUT REDIRECT 
+
+/*
+if (shell_struct.out != NULL && strchr(shell_struct.ArgV_S[i], '>')){ 
+    printf("Child process: stdout redirection\n");
+    //https://linux.die.net/man/3/creat
+    mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+    char *filename = shell_struct.ArgV_S[-1];        // File name is right side of redirect
+    printf("fileName: %d \n", filename);
+    fd_out = creat(filename, mode);                  // fd_out or oldFd?
+    //Wait until after execution? 
+    close(1);           
+    dup(fd_out);        //Should we use dup2
+    close(fd_out);
+}
+
+*/

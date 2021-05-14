@@ -29,10 +29,17 @@ int main() {
         pipeCount(&ShellStruct);
 
         pipePrep(&ShellStruct);
+<<<<<<< Updated upstream
         //printArgv(ShellStruct);
+=======
+        printArgv(ShellStruct);
+        redirectCount(&ShellStruct);
+
+>>>>>>> Stashed changes
 
         if (ShellStruct.num_words == 1) {
             runSimpleCommands(ShellStruct);
+<<<<<<< Updated upstream
         } else {
             runPipes(ShellStruct);
         }
@@ -40,6 +47,18 @@ int main() {
 
         free(ShellStruct.ArgV_S);
         printf("Conch Shell: ");
+=======
+        }
+        else if (ShellStruct.numPipes > 0){
+            runPipes(ShellStruct);
+        }
+        else{
+            runRedirects(ShellStruct);
+        }
+
+        free(ShellStruct.ArgV_S);
+        printf("Conch Shell: ");                            // Loop until user hits Ctrl-D (end of input) or other input error
+>>>>>>> Stashed changes
     }
     return 0;
 }

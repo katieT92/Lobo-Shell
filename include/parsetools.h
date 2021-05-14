@@ -26,6 +26,7 @@ struct Data_IDK
 {
     int numPipes;
     int num_words;
+<<<<<<< Updated upstream
     int AppendIn;
     int AppendOut;
     int numRedirectIn ;
@@ -34,6 +35,15 @@ struct Data_IDK
     char* IndexList;
     char** ArgV_S;
 
+=======
+    int num_redirects;
+    char* line_words[MAX_LINE_WORDS + 1];
+    char** ArgV_S;
+    char* in;
+    char* out;
+    char* appendIn;
+    char* appendOut;
+>>>>>>> Stashed changes
 };
 
 int split_cmd_line(char* line, char** list_to_populate);
@@ -47,6 +57,8 @@ void printArgv(struct Data_IDK shell_struct);
 void runRedirects(struct Data_IDK shell_struct);
 
 void syserror(const char *s);
+void redirectCount(struct Data_IDK *shell_struct);
+
 
 
 
