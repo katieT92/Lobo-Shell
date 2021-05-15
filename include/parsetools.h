@@ -10,32 +10,18 @@
 #include <errno.h>
 #include <string.h>
 #include <fcntl.h>
-
 #include <stdbool.h> 
 #include "constants.h"
-
-
 
 // Parse a command line into a list of words,
 //    separated by whitespace.
 // Returns the number of words
 //
 
-
 struct Data_IDK
 {
     int numPipes;
     int num_words;
-<<<<<<< Updated upstream
-    int AppendIn;
-    int AppendOut;
-    int numRedirectIn ;
-    int numRedirectOut;
-    char* line_words[MAX_LINE_WORDS + 1]; 
-    char* IndexList;
-    char** ArgV_S;
-
-=======
     int num_redirects;
     char* line_words[MAX_LINE_WORDS + 1];
     char** ArgV_S;
@@ -43,11 +29,9 @@ struct Data_IDK
     char* out;
     char* appendIn;
     char* appendOut;
->>>>>>> Stashed changes
 };
 
 int split_cmd_line(char* line, char** list_to_populate);
-
 void pipeCount(struct Data_IDK *shell_struct);
 void pipePrep(struct Data_IDK *shell_struct);
 void runSimpleCommands(struct Data_IDK shell_struct);
@@ -55,12 +39,8 @@ void runPipes(struct Data_IDK shell_struct);
 void printLineWords(struct Data_IDK shell_struct);
 void printArgv(struct Data_IDK shell_struct);
 void runRedirects(struct Data_IDK shell_struct);
-
 void syserror(const char *s);
 void redirectCount(struct Data_IDK *shell_struct);
-
-
-
 
 
 #endif

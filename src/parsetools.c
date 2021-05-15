@@ -1,7 +1,5 @@
 #include "parsetools.h"
-#include <stdbool.h>
 
-void syserror(const char *);
 
 void syserror(const char *);
 
@@ -25,7 +23,6 @@ int split_cmd_line(char* line, char** list_to_populate) {
 //checks if there is a pipe, if there is, will request the number of pipes in the line from countPipe
 //If there are no pipes will return 0
 //If there are pipes, will return the number of pipes found.
-
 void pipeCount(struct Data_IDK *shell_struct){
     int pipeCount = 0;
     for(int i = 0; i < shell_struct->num_words; i++){
@@ -47,18 +44,18 @@ void redirectCount(struct Data_IDK *shell_struct){
 }
 
 void pipePrep(struct Data_IDK *shell_struct){
+
+    shell_struct->in = NULL;
+    shell_struct->out = NULL;
+    shell_struct->appendIn = NULL;
+    shell_struct->appendOut = NULL;
+
     int numberOfWords;
     numberOfWords = shell_struct->num_words;
     numberOfWords++;
+
+
     for(int i = 0; i < numberOfWords; i++){
-<<<<<<< Updated upstream
-        if(i < numberOfWords - 1 && strchr(shell_struct->line_words[i], '|') == NULL)                 // If not last command and not a pipe
-            shell_struct->ArgV_S[i] = shell_struct->line_words[i];                                       // Append word
-        else if (i == numberOfWords - 1 || strchr(shell_struct->line_words[i], '|') != NULL)        // If last command or is pipe
-            shell_struct->ArgV_S[i] = NULL;                                                 // Append null
-        // else if ( > or >> or < or <<)
-            // do something? Maybe we need a differnt funciton to handle redirections.  
-=======
         if(i == numberOfWords - 1 || strchr(shell_struct->line_words[i], '|') != NULL) {        // If last command or is pipe
             shell_struct->ArgV_S[i] = NULL;
         }else if(strcmp(shell_struct->line_words[i], ">>") == 0){
@@ -76,7 +73,6 @@ void pipePrep(struct Data_IDK *shell_struct){
         }else if( i < numberOfWords - 1 && strchr(shell_struct->line_words[i], '|') == NULL) {                 // If not last command and not a pipe
             shell_struct->ArgV_S[i] = shell_struct->line_words[i];
         }// Append word
->>>>>>> Stashed changes
     }
 }
 
@@ -84,7 +80,7 @@ void runSimpleCommands(struct Data_IDK shell_struct){
     pid_t pid;
     switch (pid = fork()) {
         case -1: 
-            syserror("First fork failed");
+            syserror("First fork failed\n");
             break;
         case  0: 
             execvp(shell_struct.ArgV_S[0], shell_struct.ArgV_S);
@@ -97,7 +93,6 @@ void runSimpleCommands(struct Data_IDK shell_struct){
 
 void runPipes(struct Data_IDK shell_struct){        
     int numCommands = shell_struct.numPipes + 1;                                          // Used for pipe loop variable
-
     int endNullSearchIdx = 0;                                                       // Idx for end of current command in "commands"
     int startNullSearchIdx = endNullSearchIdx;                                      // Idx for start of current command in "commands" 
     int pfd[2];                                                                     // Read(0) and write(1) ends of pipe
@@ -111,16 +106,14 @@ void runPipes(struct Data_IDK shell_struct){
 
         // START GET SINGLE COMMMAND FROM COMMANDS TO PASS TO EXEC
         int commandInsertIdx = 0;                                                   // Will always insert into "command" starting at idx 0 
-
         while (endNullSearchIdx <= shell_struct.num_words && shell_struct.ArgV_S[endNullSearchIdx])         // Find next null for current command in "commands"           
-
             endNullSearchIdx++;
         endNullSearchIdx++;
         char *command[(endNullSearchIdx-startNullSearchIdx)*sizeof(char*)];         // Create "command" to hold current command in "commands"
-        while (startNullSearchIdx < endNullSearchIdx){                              // Current command length in these bounds of "commands"
-
+        while (startNullSearchIdx < endNullSearchIdx){
+         // Current command length in these bounds of "commands"
+           // Current command length in these bounds of "commands"
             command[commandInsertIdx] = shell_struct.ArgV_S[startNullSearchIdx];               // Insert word into "command" always starting at 0
-
             commandInsertIdx++;
             startNullSearchIdx++;
         }
@@ -143,7 +136,7 @@ void runPipes(struct Data_IDK shell_struct){
                 }
                 else if (i < numCommands - 1){                                          // A middle command in allCommands
                     if (close(0) == -1)                                                 // Close fd for stdin
-                        printf("Could not close stdin from child.");
+                        printf("Could not close stdin from child.\n");
                     dup2(oldFd, 0);                                                     // Point fd for stdin at previous read end of pipe
                     dup2(pfd[1], 1);                                                    // Point fd for stdout at write end of pipe
                     execvp(command[0],  command); 
@@ -178,8 +171,6 @@ void runPipes(struct Data_IDK shell_struct){
 }
 
 
-<<<<<<< Updated upstream
-=======
 
 
 void runRedirects(struct Data_IDK shell_struct){   
@@ -192,70 +183,105 @@ void runRedirects(struct Data_IDK shell_struct){
     char* redirectExec[2*sizeof(char*)];
     redirectExec[0] = shell_struct.ArgV_S[0];
     redirectExec[1] = NULL;
+
+    //printArgv(shell_struct.line_words);
  
-    // START Redirect PROCESS                                                                   // For each command
-    switch(pid = fork()){     
-        case -1:                                                                    
-            printf("Fork %d failed.\n");
-            break;  
-        case 0:  
-            // START GET SINGLE COMMAND FROM COMMANDS TO PASS TO EXEC
-            printf("NUM COMMANDS In Input Command: %d\n", numCommands);
+    // wc -l < /usr/share/dict/words
+    pid = fork();
+    // START Redirect PROCESS                                                                   // For each command     
+    if (pid < 0){                                                       
+        printf("Fork %d failed.\n");
+    } 
+    else if (pid == 0){
+        printf("pid == 0. In Child Process\n", numCommands);
+
+        // START GET SINGLE COMMAND FROM COMMANDS TO PASS TO EXEC
+        printf("numCommands in full command: %d\n\n", numCommands);
+        //wc -l < /usr/share/dict/words
+        for (int i = 0; i < numCommands; i++){  
+            printf("In iteration %d of for loop\n", i);
+            int commandInsertIdx = 0;                                                   
             
-            for (int i = 0; i < numCommands; i++){  
-                printf("In iteration %d\n", i);
-                int commandInsertIdx = 0;                                                   
-                
-                while (endNullSearchIdx <= shell_struct.num_words && !strchr(shell_struct.line_words[endNullSearchIdx], '<') &&
-                !strchr(shell_struct.line_words[endNullSearchIdx], '>') &&
-                strcmp(shell_struct.line_words[endNullSearchIdx], ">>") != 0){
-                    endNullSearchIdx++;
-                }                
+            //wc -l < /usr/share/dict/words
+            while (endNullSearchIdx < shell_struct.num_words + 1 && !strchr(shell_struct.line_words[endNullSearchIdx], '<') &&
+            !strchr(shell_struct.line_words[endNullSearchIdx], '>') &&
+            strcmp(shell_struct.line_words[endNullSearchIdx], ">>") != 0 && shell_struct.line_words[endNullSearchIdx]){
+                printf("In iteration %d. Incrementing endNullSearchIdx.\n", i);
+                printf("endNullSearchIdx before increment: %d\n", endNullSearchIdx);
                 endNullSearchIdx++;
-                char *command[(endNullSearchIdx-startNullSearchIdx)*sizeof(char*)]; 
+                printf("endNullSearchIdx after increment: %d\n", endNullSearchIdx);
+            }              
+            endNullSearchIdx++;
+            printf("Out of first while. endNullSearchIdx is: %d\n\n", endNullSearchIdx);
 
-                while (startNullSearchIdx < endNullSearchIdx){
-                    command[commandInsertIdx] = shell_struct.line_words[startNullSearchIdx];              
-                    commandInsertIdx++;
-                    startNullSearchIdx++;
-                }
-                // END GET SINGLE COMMAND FROM COMMANDS TO PASS TO EXEC
-                fileDirect += commandInsertIdx;                             // File to write, read or append to/from
+            char *command[(endNullSearchIdx-startNullSearchIdx)*sizeof(char*)]; 
 
-                printf("WER HIT RIGHT ABOVE THE IF STATMENT\n");
-                if (strchr(command[commandInsertIdx], '<')){                 // This will be the last element in command (a redirect)
-                    printf("command[-1] = %s\n", command[commandInsertIdx]);
-                    int fd0;
-                    fd0 = open(shell_struct.line_words[fileDirect], O_RDONLY);
-                    dup2(fd0, 0);
-                    close(fd0);
-                }
-                else if (strchr(command[commandInsertIdx], '>')) {
-                    printf("command[-1] = %s\n", command[commandInsertIdx]);
-                    int fd1;
-                    fd1 = open(shell_struct.line_words[fileDirect], O_RDONLY | O_CREAT, 1);
-                    dup2(fd1, 1);
-                    close(fd1);     
-                }
-                else{
-                    printf("command[-1] = %s\n", command[commandInsertIdx]);
-                    int fd1;
-                    fd1 = open(shell_struct.line_words[fileDirect], O_RDWR | O_CREAT | O_APPEND, 1);
-                    dup2(fd1, 1);
-                    close(fd1);
-                }
-                printf("WE HIT RIGHT AFTER THE IF STATEMENT. entering next for loop iteration if any.\n");
-            }  
-            execvp(redirectExec[0], redirectExec);
-        default:   
-            printf("In parent redirect");                                                            
-            while (wait(NULL) != -1);  
-    }                                        
+            while (startNullSearchIdx < endNullSearchIdx){
+                printf("In second while. Adding %s to command[%d] in iteration %d\n", shell_struct.line_words[startNullSearchIdx], commandInsertIdx, i);
+                command[commandInsertIdx] = shell_struct.line_words[startNullSearchIdx];
+                printf("command[commandInsertIdx]: %s\n", command[commandInsertIdx]);   
+                printf("commandInsertIdx before increment: %d\n", commandInsertIdx);           
+                commandInsertIdx++;
+                printf("commandInsertIdx after increment: %d\n", commandInsertIdx);
+                printf("startNullSearchIdx before increment: %d\n", startNullSearchIdx);
+                startNullSearchIdx++;
+                printf("startNullSearchIdx after increment: %d\n", startNullSearchIdx);
+            }
+            printf("Out of second while loop.\n\n");
+            printf("fileDirect before accumulate: %d\n", fileDirect);
+            fileDirect += commandInsertIdx;                             // File to write, read or append to/from
+            printf("fileDirect after accumulate: %d\n\n", fileDirect);
+
+            // wc -l < /usr/share/dict/words null
+            printf("About to enter if else block\n");
+            printf("The command[commandInsertIdx]: %s\n", command[commandInsertIdx-1]);
+            if (strchr(command[commandInsertIdx-1], '<') != NULL){                 // This will be the last element in command (a redirect)
+                printf("In if\n");
+                printf("command[-1] = %s\n", command[commandInsertIdx-1]);
+                int fd0;
+                fd0 = open(shell_struct.line_words[fileDirect], O_RDONLY);
+                dup2(fd0, 0);
+                close(fd0);
+            }
+            else if (strchr(command[commandInsertIdx-1], '>') != NULL) {
+                printf("In if else\n");
+                printf("command[-1] = %s\n", command[commandInsertIdx-1]);
+                int fd1;
+                fd1 = open(shell_struct.line_words[fileDirect], O_RDONLY | O_CREAT, 1);
+                dup2(fd1, 1);
+                close(fd1);     
+            }
+            else if (strcmp(command[commandInsertIdx-1], ">>") == 0){
+                printf("In second if else\n");
+                printf("command[-1] = %s\n", command[commandInsertIdx-1]);
+                int fd1;
+                fd1 = open(shell_struct.line_words[fileDirect], O_RDWR | O_CREAT | O_APPEND, 1);
+                dup2(fd1, 1);
+                close(fd1);
+            }
+            else{
+                printf("In else.\n");
+            }
+            printf("Done with if else block. This should definitely print.\n");
+        }  
+        execvp(redirectExec[0], redirectExec);
+    }
+    // else{
+    //     int status = 0, childValidityIndex = 0;
+    //     char childValidities[numProcesses];
+
+    //     while(wait(&status) > 0){ // Reap zombie children :) - Use for return values
+    //         childValidities[childValidityIndex] = status > 0 ? 'v' : 'i'; 
+    //         childValidityIndex++;
+    //     }
+    //     while (wait(NULL) != -1);
+    //     printf("Finished child process. In parent process.\n\n");                                                            
+    // }                                       
 }
 
 
 
-
+// wc -l < /usr/share/dict/words NULL
 
 
 
@@ -343,39 +369,20 @@ void runRedirects(struct Data_IDK shell_struct){
 // }
 
 
->>>>>>> Stashed changes
 void printLineWords(struct Data_IDK shell_struct){
-    for (int i=0; i < shell_struct.num_words; i++) {
+    for (int i=0; i < shell_struct.num_words + 1; i++) {
         printf("Line Words: %s\n", shell_struct.line_words[i]);
     }
-    printf("DONE WITH PRINTLINEWORDS\n");
+    printf("DONE WITH PRINTLINEWORDS\n\n");
 }
 
 void printArgv(struct Data_IDK shell_struct){
     for (int i=0; i < shell_struct.num_words+1; i++) {
         printf("Argv Words: %s\n", shell_struct.ArgV_S[i]);
     }
-    printf("DONE WITH PRINTARGV\n");
+    printf("DONE WITH PRINT OF ARGV\n\n");
 }
 
-<<<<<<< Updated upstream
-void runRedirects(struct Data_IDK shell_struct){    //https://stackoverflow.com/questions/11515399/implementing-shell-in-c-and-need-help-handling-input-output-redirection
-    // char direction = '<';
-    // if(direction == '<'){
-    //     fd_in = open(shell_struct->linewords, O_RDONLY, 0);
-    //     dup2(fd, STDIN_FILENO);
-    //     in = 0;
-    //     current_in = dup(0);  // Fix for symmetry with second paragraph
-    // }
-    // else if (direction == ' >'){
-    //     fd = creat(output, 0644);
-    //     dup2(fd, STDOUT_FILENO);
-    //     out = 0;
-    //     current_out = dup(1);
-    // }
-    exit;
-}
-=======
 // void runRedirects(struct Data_IDK shell_struct){    //https://stackoverflow.com/questions/11515399/implementing-shell-in-c-and-need-help-handling-input-output-redirection
 //     int pid = fork();
 
@@ -406,8 +413,6 @@ void runRedirects(struct Data_IDK shell_struct){    //https://stackoverflow.com/
 //     }
 //     exit;
 // }
->>>>>>> Stashed changes
-
 
 
 void syserror(const char *s){

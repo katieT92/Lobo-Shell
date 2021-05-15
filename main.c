@@ -1,5 +1,4 @@
 #include "parsetools.h"
-
 #include "constants.h"
 
 
@@ -13,41 +12,32 @@ int main() {
 
     printf("Conch Shell: ");                            // Loop until user hits Ctrl-D (end of input) or other input error
     while( fgets(line, MAX_LINE_CHARS, stdin) ) {
-        if (line[strlen(line) - 1] == '\n')               // Delete the new line character from end of line if present
-            line[strlen(line) - 1] = '\0';
+        if (line[strlen(line)-1] == '\n')               // Delete the new line character from end of line if present   
+            line[strlen(line)-1] = '\0';    
 
-        ShellStruct.num_words = split_cmd_line(line,
-                                               line_words);                     // Num words (including pipes) in line_words
+        ShellStruct.num_words = split_cmd_line(line, line_words);
+        // Num words (including pipes) in line_words
         memcpy(ShellStruct.line_words, line_words, sizeof(line_words));
         //strcpy(ShellStruct.line_words, line_words);
         //printLineWords(ShellStruct);
 
         //char **ArgV = malloc(sizeof(char*)*(ShellStruct.num_words+1));
-        ShellStruct.ArgV_S = malloc(sizeof(char *) * (ShellStruct.num_words));
+
+        ShellStruct.ArgV_S = malloc(sizeof(char*)*(ShellStruct.num_words + 1));
         //strcpy(ShellStruct.ArgV_S, ArgV);
 
         pipeCount(&ShellStruct);
-
+        // printLineWords(ShellStruct);
         pipePrep(&ShellStruct);
-<<<<<<< Updated upstream
-        //printArgv(ShellStruct);
-=======
         printArgv(ShellStruct);
+        printLineWords(ShellStruct);
+
         redirectCount(&ShellStruct);
 
->>>>>>> Stashed changes
 
-        if (ShellStruct.num_words == 1) {
+
+        if (ShellStruct.num_words == 1){
             runSimpleCommands(ShellStruct);
-<<<<<<< Updated upstream
-        } else {
-            runPipes(ShellStruct);
-        }
-        //runRedirects();
-
-        free(ShellStruct.ArgV_S);
-        printf("Conch Shell: ");
-=======
         }
         else if (ShellStruct.numPipes > 0){
             runPipes(ShellStruct);
@@ -58,7 +48,6 @@ int main() {
 
         free(ShellStruct.ArgV_S);
         printf("Conch Shell: ");                            // Loop until user hits Ctrl-D (end of input) or other input error
->>>>>>> Stashed changes
     }
     return 0;
 }
