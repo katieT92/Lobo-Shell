@@ -33,54 +33,100 @@ void pipeCount(struct Data_IDK *shell_struct){
     shell_struct->numPipes = pipeCount;
 }
 
-void pipePrep(struct Data_IDK *shell_struct){
+void pipePrep(struct Data_IDK *shell_struct) {
 
-
-
-    shell_struct->in = NULL;
-    shell_struct->out = NULL;
-    shell_struct->appendOut = NULL;
+    printf("in inside pipePrep %s\n", shell_struct->in);
+    printf("out inside pipePrep %s\n", shell_struct->out);
+    printf("appendOut inside pipePrep %s\n", shell_struct->appendOut);
+    printf("inside pipePrep num_ArgV_S: %d\n", shell_struct->num_ArgV_S);
 
     int numberOfWords;
     numberOfWords = shell_struct->num_words;
     numberOfWords++;
 
 
-    for(int i = 0; i < numberOfWords; i++){
-        if(i == numberOfWords - 1 || strchr(shell_struct->line_words[i], '|') != NULL) {        // If last command or is pipe
-            shell_struct->ArgV_S[i] = NULL;
-        }else if(strcmp(shell_struct->line_words[i], ">>") == 0){
-            shell_struct->ArgV_S[i] = NULL;
-            shell_struct->appendOut = shell_struct->line_words[i + 1];
-            printf("appendOut Caught: %s\n", shell_struct->appendOut );
-        }else if (strchr(shell_struct->line_words[i], '>') != NULL){
-                shell_struct->ArgV_S[i] = NULL;
-                shell_struct->out = shell_struct->line_words[i + 1];
-            printf("in Caught: %s\n", shell_struct->in );
-        }else if(strchr(shell_struct->line_words[i], '<') != NULL){
-                shell_struct->ArgV_S[i] = NULL;
-                shell_struct->in = shell_struct->line_words[i + 1];
-            printf("out Caught: %s\n", shell_struct->out );
-        }else if( i < numberOfWords - 1 && strchr(shell_struct->line_words[i], '|') == NULL) {                 // If not last command and not a pipe
-            shell_struct->ArgV_S[i] = shell_struct->line_words[i];
+int j = 0;
+    for (int i = 0; i < numberOfWords; i++) {
+        if (i == numberOfWords - 1 ||
+            strchr(shell_struct->line_words[i], '|') != NULL) {        // If last command or is pipe
+            shell_struct->ArgV_S[j] = NULL;
+            j++;
+        } else if(shell_struct->appendOut != NULL){
+
+            if (strcmp(shell_struct->line_words[i], shell_struct->appendOut) == 0) {
+
+            j++;
+            printf("appendOut Caught: %s\n", shell_struct->appendOut);
+            }
+        } else if(shell_struct->out != NULL){
+            if (strcmp(shell_struct->line_words[i], shell_struct->in) == 0) {
+
+
+                j++;
+                printf("in Caught: %s\n", shell_struct->in);
+            }
+            } else if(shell_struct->in != NULL){
+                if (strcmp(shell_struct->line_words[i], shell_struct->out) == 0) {
+
+
+                    j++;
+                    printf("out Caught: %s\n", shell_struct->out);
+                }
+        } else if (i < numberOfWords - 1 && strchr(shell_struct->line_words[i], '|') ==
+                                            NULL) {                 // If not last command and not a pipe
+            shell_struct->ArgV_S[j] = shell_struct->line_words[i];
+            printf("ArgV J: \n", shell_struct->ArgV_S[j]);
+            j++;
         }// Append word
     }
+    printf("num_ArgV_S: %d\n", shell_struct->num_ArgV_S);
+/*
+    if (shell_struct->in != NULL){
+        char *trimFrontArgV_S[shell_struct->num_words - 1];
+        shell_struct->num_ArgV_S = (shell_struct->num_words - 1);
+        for (int i = 0; i < shell_struct->num_words - 1; i++) {
+            trimFrontArgV_S[i] = shell_struct->ArgV_S[i];
+        }
+        strncpy(shell_struct->ArgV_S[0], trimFrontArgV_S, sizeof(trimFrontArgV_S));
 
-    if(shell_struct->in != NULL || shell_struct->out != NULL || shell_struct->appendOut != NULL){
-        char * adjustArgV[shell_struct->num_words - 1];
-        for(int i = 0; i < shell_struct->num_words - 1; i++){
+        for (int i = 0; i < shell_struct->num_words - 1; i++) {
+            printf("trimFrontArgV_S Words: %s\n", trimFrontArgV_S[i]);
+        }
+
+    }
+
+
+    if ((shell_struct->out != NULL || shell_struct->appendOut != NULL) && shell_struct->in == NULL) {
+        char *adjustArgV[shell_struct->num_words - 1];
+        for (int i = 0; i < shell_struct->num_words - 1; i++) {
             adjustArgV[i] = shell_struct->ArgV_S[i];
         }
 
-        for (int i=0; i < shell_struct->num_words-1; i++) {
+        for (int i = 0; i < shell_struct->num_words - 1; i++) {
             printf("adjustArgV Words: %s\n", adjustArgV[i]);
         }
-        //strcpy(shell_struct->ArgV_S, adjustArgV);
-        shell_struct->num_ArgV_S = (shell_struct->num_words -1);
-        printf("num_ArgV_S: %d", shell_struct->num_ArgV_S);
-        shell_struct->ArgV_S = (char **) realloc(shell_struct->ArgV_S, (shell_struct->num_words -1));
 
-       //memcpy(shell_struct->ArgV_S, adjustArgV, sizeof(adjustArgV));
+        strncpy(shell_struct->ArgV_S, adjustArgV, sizeof(adjustArgV));
+        shell_struct->num_ArgV_S = (shell_struct->num_words - 1);
+        printf("num_ArgV_S: %d", shell_struct->num_ArgV_S);
+        //shell_struct->ArgV_S = (char **) realloc(shell_struct->ArgV_S, (shell_struct->num_words - 1));
+        //memcpy(shell_struct->ArgV_S, adjustArgV, sizeof(adjustArgV));
+
+
+    }else if(shell_struct->out != NULL || shell_struct->appendOut != NULL) && shell_struct->in != NULL){
+        char *trimEndArgV_S[shell_struct->num_words - 3];
+        for (int i = 0; i < shell_struct->num_words - 1; i++) {
+            trimEndArgV_S[i] = shell_struct->ArgV_S[i];
+        }
+
+        for (int i = 0; i < shell_struct->num_words - 1; i++) {
+            printf("trimEndArgV_S Words: %s\n", trimEndArgV_S[i]);
+        }
+
+
+        shell_struct->num_ArgV_S = (shell_struct->num_ArgV_S - 2);
+        strncpy(shell_struct->ArgV_S, trimEndArgV_S, sizeof(trimEndArgV_S));
+
     }else{
         shell_struct->num_ArgV_S = (shell_struct->num_words + 1);
     }
@@ -91,11 +137,16 @@ void pipePrep(struct Data_IDK *shell_struct){
        // free(adjustArgV);
 
 
-/*
+
     memcpy(ShellStruct.line_words, line_words, sizeof(line_words));
     numberOfWords: 6 - ArgV is 1 more than num_words
     num_words    : 5
     num_words -1 : 4
+
+ a.in < ls >> b.out
+[a.in][NULL][ls][NULL][b.out][null]
+
+    [ls][NULL] - desired output
 
 
     ls | wc > a.out
@@ -108,36 +159,29 @@ void pipePrep(struct Data_IDK *shell_struct){
  }
 
 void runSimpleCommands(struct Data_IDK shell_struct){
+    printf("Top Simple Commands.\n");
     pid_t pid;
     switch (pid = fork()) {
         case -1: 
             syserror("First fork failed\n");
             break;
         case  0:
-/*
             if(shell_struct.in != NULL){
-                printf("In if\n");
-                printf("command[-1] = %s\n", command[commandInsertIdx-1]);
                 int fd0;
-                fd0 = open(shell_struct.line_words[fileDirect], O_RDONLY);
+                fd0 = open(shell_struct.in, O_RDONLY, 0);;
                 dup2(fd0, 0);
                 close(fd0);
             }else if(shell_struct.out != NULL) {
-                printf("In if else\n");
-                printf("command[-1] = %s\n", command[commandInsertIdx - 1]);
                 int fd1;
-                fd1 = open(shell_struct.line_words[fileDirect], O_RDONLY | O_CREAT, 1);
+                fd1 = open(shell_struct.out, O_WRONLY|O_CREAT|O_TRUNC, 0777);;
                 dup2(fd1, 1);
                 close(fd1);
             }else if(shell_struct.appendOut != NULL) {
-                printf("In second if else\n");
-                printf("command[-1] = %s\n", command[commandInsertIdx - 1]);
                 int fd1;
-                fd1 = open(shell_struct.line_words[fileDirect], O_RDWR | O_CREAT | O_APPEND, 1);
+                fd1 = open(shell_struct.appendOut, O_RDWR | O_CREAT | O_APPEND, 00007);
                 dup2(fd1, 1);
                 close(fd1);
             }
-*/
             execvp(shell_struct.ArgV_S[0], shell_struct.ArgV_S);
         default:
             fprintf(stderr, "The first child's pid is: %d\n", pid);
@@ -299,6 +343,36 @@ void runRedirects(struct Data_IDK shell_struct){    //https://stackoverflow.com/
     // }
     exit;
 }
+
+int GetSizeArgV_S(struct Data_IDK *shell_struct){
+    shell_struct->in = NULL;
+    shell_struct->out = NULL;
+    shell_struct->appendOut = NULL;
+
+    int numberOfWords;
+    numberOfWords = shell_struct->num_words;
+    numberOfWords++;
+    int ArgV_WordCount = 0;
+    for(int j = 0; j < numberOfWords; j++){
+        if (j == numberOfWords - 1 || strchr(shell_struct->line_words[j], '|') != NULL) {
+            ArgV_WordCount = ArgV_WordCount + 1;
+        } else if (strcmp(shell_struct->line_words[j], ">>") == 0) {
+            shell_struct->appendOut = shell_struct->line_words[j + 1];
+            j++;
+        } else if (strchr(shell_struct->line_words[j], '>') != NULL) {
+            shell_struct->out = shell_struct->line_words[j + 1];
+            j++;
+        } else if (strchr(shell_struct->line_words[j], '<') != NULL) {
+            shell_struct->in = shell_struct->line_words[j - 1];
+            j++;
+        } else if (j < numberOfWords - 1 && strchr(shell_struct->line_words[j], '|') == NULL) {                 // If not last command and not a pipe
+            ArgV_WordCount = ArgV_WordCount + 1;
+        }// Append word
+    }
+
+   return ArgV_WordCount;
+}
+
 
 
 void syserror(const char *s){

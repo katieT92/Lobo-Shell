@@ -41,6 +41,7 @@ void runPipes(struct Data_IDK shell_struct);
 void printLineWords(struct Data_IDK shell_struct);
 void printArgv(struct Data_IDK shell_struct);
 void runRedirects(struct Data_IDK shell_struct);
+int GetSizeArgV_S(struct Data_IDK *shell_struct);
 void syserror(const char *s);
 
 #endif
