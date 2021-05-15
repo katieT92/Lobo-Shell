@@ -22,11 +22,11 @@ struct Data_IDK
 {
     int numPipes;
     int num_words;
+    int num_ArgV_S;
     char* line_words[MAX_LINE_WORDS + 1];
     char** ArgV_S;
     char* in;
     char* out;
-    char* appendIn;
     char* appendOut;
 
 

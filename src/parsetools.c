@@ -35,9 +35,10 @@ void pipeCount(struct Data_IDK *shell_struct){
 
 void pipePrep(struct Data_IDK *shell_struct){
 
+
+
     shell_struct->in = NULL;
     shell_struct->out = NULL;
-    shell_struct->appendIn = NULL;
     shell_struct->appendOut = NULL;
 
     int numberOfWords;
@@ -48,10 +49,6 @@ void pipePrep(struct Data_IDK *shell_struct){
     for(int i = 0; i < numberOfWords; i++){
         if(i == numberOfWords - 1 || strchr(shell_struct->line_words[i], '|') != NULL) {        // If last command or is pipe
             shell_struct->ArgV_S[i] = NULL;
-        }else if(strcmp(shell_struct->line_words[i], "<<") == 0){
-            shell_struct->ArgV_S[i] = NULL;
-            shell_struct->appendIn = shell_struct->line_words[i + 1];
-            printf("appendIn Caught: %s\n", shell_struct->appendIn );
         }else if(strcmp(shell_struct->line_words[i], ">>") == 0){
             shell_struct->ArgV_S[i] = NULL;
             shell_struct->appendOut = shell_struct->line_words[i + 1];
@@ -68,7 +65,47 @@ void pipePrep(struct Data_IDK *shell_struct){
             shell_struct->ArgV_S[i] = shell_struct->line_words[i];
         }// Append word
     }
-}
+
+    if(shell_struct->in != NULL || shell_struct->out != NULL || shell_struct->appendOut != NULL){
+        char * adjustArgV[shell_struct->num_words - 1];
+        for(int i = 0; i < shell_struct->num_words - 1; i++){
+            adjustArgV[i] = shell_struct->ArgV_S[i];
+        }
+
+        for (int i=0; i < shell_struct->num_words-1; i++) {
+            printf("adjustArgV Words: %s\n", adjustArgV[i]);
+        }
+        //strcpy(shell_struct->ArgV_S, adjustArgV);
+        shell_struct->num_ArgV_S = (shell_struct->num_words -1);
+        printf("num_ArgV_S: %d", shell_struct->num_ArgV_S);
+        shell_struct->ArgV_S = (char **) realloc(shell_struct->ArgV_S, (shell_struct->num_words -1));
+
+       //memcpy(shell_struct->ArgV_S, adjustArgV, sizeof(adjustArgV));
+    }else{
+        shell_struct->num_ArgV_S = (shell_struct->num_words + 1);
+    }
+
+
+
+
+       // free(adjustArgV);
+
+
+/*
+    memcpy(ShellStruct.line_words, line_words, sizeof(line_words));
+    numberOfWords: 6 - ArgV is 1 more than num_words
+    num_words    : 5
+    num_words -1 : 4
+
+
+    ls | wc > a.out
+    [ls][NULL][wc][null][a.out][null]  - current output
+
+    [ls][NULL][wc][NULL] - desired output
+
+    ls -l > a.out
+*/
+ }
 
 void runSimpleCommands(struct Data_IDK shell_struct){
     pid_t pid;
@@ -76,7 +113,31 @@ void runSimpleCommands(struct Data_IDK shell_struct){
         case -1: 
             syserror("First fork failed\n");
             break;
-        case  0: 
+        case  0:
+
+            if(shell_struct.in != NULL){
+                printf("In if\n");
+                printf("command[-1] = %s\n", command[commandInsertIdx-1]);
+                int fd0;
+                fd0 = open(shell_struct.line_words[fileDirect], O_RDONLY);
+                dup2(fd0, 0);
+                close(fd0);
+            }else if(shell_struct.out != NULL) {
+                printf("In if else\n");
+                printf("command[-1] = %s\n", command[commandInsertIdx - 1]);
+                int fd1;
+                fd1 = open(shell_struct.line_words[fileDirect], O_RDONLY | O_CREAT, 1);
+                dup2(fd1, 1);
+                close(fd1);
+            }else if(shell_struct.appendOut != NULL) {
+                printf("In second if else\n");
+                printf("command[-1] = %s\n", command[commandInsertIdx - 1]);
+                int fd1;
+                fd1 = open(shell_struct.line_words[fileDirect], O_RDWR | O_CREAT | O_APPEND, 1);
+                dup2(fd1, 1);
+                close(fd1);
+            }
+
             execvp(shell_struct.ArgV_S[0], shell_struct.ArgV_S);
         default:
             fprintf(stderr, "The first child's pid is: %d\n", pid);
@@ -172,13 +233,43 @@ void printLineWords(struct Data_IDK shell_struct){
 }
 
 void printArgv(struct Data_IDK shell_struct){
-    for (int i=0; i < shell_struct.num_words+1; i++) {
+    for (int i=0; i < shell_struct.num_ArgV_S; i++) {
         printf("Argv Words: %s\n", shell_struct.ArgV_S[i]);
     }
     printf("DONE WITH PRINTARGV\n");
 }
 
 void runRedirects(struct Data_IDK shell_struct){    //https://stackoverflow.com/questions/11515399/implementing-shell-in-c-and-need-help-handling-input-output-redirection
+
+/*
+    if(shell_struct.in != NULL){
+        printf("In if\n");
+        printf("command[-1] = %s\n", command[commandInsertIdx-1]);
+        int fd0;
+        fd0 = open(shell_struct.line_words[fileDirect], O_RDONLY);
+        dup2(fd0, 0);
+        close(fd0);
+    }else if(shell_struct.out != NULL) {
+        printf("In if else\n");
+        printf("command[-1] = %s\n", command[commandInsertIdx - 1]);
+        int fd1;
+        fd1 = open(shell_struct.line_words[fileDirect], O_RDONLY | O_CREAT, 1);
+        dup2(fd1, 1);
+        close(fd1);
+    }else if(shell_struct.appendOut != NULL) {
+        printf("In second if else\n");
+        printf("command[-1] = %s\n", command[commandInsertIdx - 1]);
+        int fd1;
+        fd1 = open(shell_struct.line_words[fileDirect], O_RDWR | O_CREAT | O_APPEND, 1);
+        dup2(fd1, 1);
+        close(fd1);
+    }else{
+        printf("In else.\n");
+    }
+
+    execvp(redirectExec[0], redirectExec);
+*/
+
     // int pid = fork();
 
     // if (pid == -1) {
