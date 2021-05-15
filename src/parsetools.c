@@ -205,7 +205,7 @@ void runRedirects(struct Data_IDK shell_struct){
             //wc -l < /usr/share/dict/words
             while (endNullSearchIdx < shell_struct.num_words + 1 && !strchr(shell_struct.line_words[endNullSearchIdx], '<') &&
             !strchr(shell_struct.line_words[endNullSearchIdx], '>') &&
-            strcmp(shell_struct.line_words[endNullSearchIdx], ">>") != 0 && shell_struct.line_words[endNullSearchIdx]){
+            strcmp(shell_struct.line_words[endNullSearchIdx], ">>") != 0 && shell_struct.line_words[endNullSearchIdx] != NULL){
                 printf("In iteration %d. Incrementing endNullSearchIdx.\n", i);
                 printf("endNullSearchIdx before increment: %d\n", endNullSearchIdx);
                 endNullSearchIdx++;
@@ -234,47 +234,46 @@ void runRedirects(struct Data_IDK shell_struct){
 
             // wc -l < /usr/share/dict/words null
             printf("About to enter if else block\n");
-            printf("The command[commandInsertIdx]: %s\n", command[commandInsertIdx-1]);
-            if (strchr(command[commandInsertIdx-1], '<') != NULL){                 // This will be the last element in command (a redirect)
+            printf("The command[fileDirect-1]: %s\n", command[fileDirect-1]);
+            if (strchr(command[fileDirect-1], '<') != NULL){                 // This will be the last element in command (a redirect)
                 printf("In if\n");
-                printf("command[-1] = %s\n", command[commandInsertIdx-1]);
+                printf("command[-1] = %s\n", command[fileDirect-1]);
                 int fd0;
                 fd0 = open(shell_struct.line_words[fileDirect], O_RDONLY);
                 dup2(fd0, 0);
                 close(fd0);
             }
-            else if (strchr(command[commandInsertIdx-1], '>') != NULL) {
+            else if (strchr(command[fileDirect-1], '>') != NULL) {
                 printf("In if else\n");
-                printf("command[-1] = %s\n", command[commandInsertIdx-1]);
+                printf("command[-1] = %s\n", command[fileDirect-1]);
                 int fd1;
-                fd1 = open(shell_struct.line_words[fileDirect], O_RDONLY | O_CREAT, 1);
+                //mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+                //fd1 = creat(shell_struct.line_words[fileDirect], mode);
+                fd1 = open(shell_struct.line_words[fileDirect], O_WRONLY | O_CREAT, 0644);
                 dup2(fd1, 1);
                 close(fd1);     
             }
-            else if (strcmp(command[commandInsertIdx-1], ">>") == 0){
+            else if (strcmp(command[fileDirect-1], ">>") == 0){
                 printf("In second if else\n");
-                printf("command[-1] = %s\n", command[commandInsertIdx-1]);
+                printf("command[-1] = %s\n", command[fileDirect-1]);
                 int fd1;
-                fd1 = open(shell_struct.line_words[fileDirect], O_RDWR | O_CREAT | O_APPEND, 1);
+                fd1 = open(shell_struct.line_words[fileDirect], O_WRONLY | O_CREAT | O_APPEND, 0644);
                 dup2(fd1, 1);
                 close(fd1);
             }
             else{
                 printf("In else.\n");
             }
+            execvp(redirectExec[0], redirectExec);
             printf("Done with if else block. This should definitely print.\n");
         }  
-        execvp(redirectExec[0], redirectExec);
-    }
-    // else{
-    //     int status = 0, childValidityIndex = 0;
-    //     char childValidities[numProcesses];
 
-    //     while(wait(&status) > 0){ // Reap zombie children :) - Use for return values
-    //         childValidities[childValidityIndex] = status > 0 ? 'v' : 'i'; 
-    //         childValidityIndex++;
-    //     }
-    //     while (wait(NULL) != -1);
+    }
+    else{
+        int status = 0;
+        while(wait(&status) > 0);
+    }
+        //while (wait(NULL) != -1);
     //     printf("Finished child process. In parent process.\n\n");                                                            
     // }                                       
 }
