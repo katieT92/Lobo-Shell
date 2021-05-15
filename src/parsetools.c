@@ -114,7 +114,7 @@ void runSimpleCommands(struct Data_IDK shell_struct){
             syserror("First fork failed\n");
             break;
         case  0:
-
+/*
             if(shell_struct.in != NULL){
                 printf("In if\n");
                 printf("command[-1] = %s\n", command[commandInsertIdx-1]);
@@ -137,7 +137,7 @@ void runSimpleCommands(struct Data_IDK shell_struct){
                 dup2(fd1, 1);
                 close(fd1);
             }
-
+*/
             execvp(shell_struct.ArgV_S[0], shell_struct.ArgV_S);
         default:
             fprintf(stderr, "The first child's pid is: %d\n", pid);
