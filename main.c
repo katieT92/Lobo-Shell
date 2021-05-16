@@ -30,21 +30,39 @@ int main() {
         ShellStruct.ArgV_S = malloc(sizeof(char*)*(ShellStruct.num_ArgV_S));
 
         pipeCount(&ShellStruct);
+        redirectCount(&ShellStruct);
         printLineWords(ShellStruct);
         pipePrep(&ShellStruct);
         printArgv(ShellStruct);
 
-               if (ShellStruct.num_ArgV_S == 2){
+        int posOfFirstSymbol = 0;
+        while (posOfFirstSymbol < ShellStruct.num_words && strcmp(line_words[posOfFirstSymbol], "<") != 0
+               && strcmp(line_words[posOfFirstSymbol], ">"), != 0 && strcmp(line_words[posOfFirstSymbol], ">>") != 0 &&
+                                                                strcmp(line_words[posOfFirstSymbol], "|") != 0){
+            posOfFirstSymbol++;
+        }
+
+        if (ShellStruct.num_words == posOfFirstSymbol){
+            runSimpleCommands(ShellStruct);
+        }
+        else{
+            runPipes(ShellStruct);
+        }
+
+            //runComplex(ShellStruct);
+/*
+               if (ShellStruct.num_ArgV_S <= 2){
                    runSimpleCommands(ShellStruct);
                }
                else{
                runPipes(ShellStruct);
+
                }
                //runRedirects();
 
              free(ShellStruct.ArgV_S);
-
-                                        // Loop until user hits Ctrl-D (end of input) or other input error
+*/
+        printf("Conch Shell: ");                                // Loop until user hits Ctrl-D (end of input) or other input error
     }
 
     return 0;
