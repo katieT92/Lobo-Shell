@@ -46,13 +46,13 @@ void redirectCount(struct Data_IDK *shell_struct){
 
 
 void pipePrep(struct Data_IDK *shell_struct) {
-
+/*
     printf("in inside pipePrep %s\n", shell_struct->in);
     printf("out inside pipePrep %s\n", shell_struct->out);
     printf("appendOut inside pipePrep %s\n", shell_struct->appendOut);
     printf("inside pipePrep num_ArgV_S: %d\n", shell_struct->num_ArgV_S);
     printf("inside pipePrep num_words: %d\n", shell_struct->num_words);
-
+*/
     int numberOfWords;
     numberOfWords = shell_struct->num_words;
     numberOfWords++;
@@ -75,82 +75,6 @@ void pipePrep(struct Data_IDK *shell_struct) {
         }// Append word
     }
 
-/*
-    if (shell_struct->in != NULL){
-        char *trimFrontArgV_S[shell_struct->num_words - 1];
-        shell_struct->num_ArgV_S = (shell_struct->num_words - 1);
-        for (int i = 0; i < shell_struct->num_words - 1; i++) {
-            trimFrontArgV_S[i] = shell_struct->ArgV_S[i];
-        }
-        strncpy(shell_struct->ArgV_S[0], trimFrontArgV_S, sizeof(trimFrontArgV_S));
-
-        for (int i = 0; i < shell_struct->num_words - 1; i++) {
-            printf("trimFrontArgV_S Words: %s\n", trimFrontArgV_S[i]);
-        }
-
-    }
-
-
-    if ((shell_struct->out != NULL || shell_struct->appendOut != NULL) && shell_struct->in == NULL) {
-        char *adjustArgV[shell_struct->num_words - 1];
-        for (int i = 0; i < shell_struct->num_words - 1; i++) {
-            adjustArgV[i] = shell_struct->ArgV_S[i];
-        }
-
-        for (int i = 0; i < shell_struct->num_words - 1; i++) {
-            printf("adjustArgV Words: %s\n", adjustArgV[i]);
-        }
-
-        strncpy(shell_struct->ArgV_S, adjustArgV, sizeof(adjustArgV));
-        shell_struct->num_ArgV_S = (shell_struct->num_words - 1);
-        printf("num_ArgV_S: %d", shell_struct->num_ArgV_S);
-        //shell_struct->ArgV_S = (char **) realloc(shell_struct->ArgV_S, (shell_struct->num_words - 1));
-        //memcpy(shell_struct->ArgV_S, adjustArgV, sizeof(adjustArgV));
-
-
-    }else if(shell_struct->out != NULL || shell_struct->appendOut != NULL) && shell_struct->in != NULL){
-        char *trimEndArgV_S[shell_struct->num_words - 3];
-        for (int i = 0; i < shell_struct->num_words - 1; i++) {
-            trimEndArgV_S[i] = shell_struct->ArgV_S[i];
-        }
-
-        for (int i = 0; i < shell_struct->num_words - 1; i++) {
-            printf("trimEndArgV_S Words: %s\n", trimEndArgV_S[i]);
-        }
-
-
-        shell_struct->num_ArgV_S = (shell_struct->num_ArgV_S - 2);
-        strncpy(shell_struct->ArgV_S, trimEndArgV_S, sizeof(trimEndArgV_S));
-
-    }else{
-        shell_struct->num_ArgV_S = (shell_struct->num_words + 1);
-    }
-
-
-
-
-       // free(adjustArgV);
-
-
-
-    memcpy(ShellStruct.line_words, line_words, sizeof(line_words));
-    numberOfWords: 6 - ArgV is 1 more than num_words
-    num_words    : 5
-    num_words -1 : 4
-
- a.in < ls >> b.out
-[a.in][NULL][ls][NULL][b.out][null]
-
-    [ls][NULL] - desired output
-
-
-    ls | wc > a.out
-    [ls][NULL][wc][null][a.out][null]  - current output
-
-    [ls][NULL][wc][NULL] - desired output
-
-    ls -l > a.out
-*/
  }
 
 void runSimpleCommands(struct Data_IDK shell_struct){

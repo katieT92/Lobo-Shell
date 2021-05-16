@@ -37,18 +37,17 @@ int main() {
 
         int posOfFirstSymbol = 0;
         while (posOfFirstSymbol < ShellStruct.num_words && strcmp(line_words[posOfFirstSymbol], "<") != 0
-               && strcmp(line_words[posOfFirstSymbol], ">"), != 0 && strcmp(line_words[posOfFirstSymbol], ">>") != 0 &&
+               && strcmp(line_words[posOfFirstSymbol], ">") != 0 && strcmp(line_words[posOfFirstSymbol], ">>") != 0 &&
                                                                 strcmp(line_words[posOfFirstSymbol], "|") != 0){
             posOfFirstSymbol++;
         }
 
-        if (ShellStruct.num_words == posOfFirstSymbol){
+        if(ShellStruct.numPipes > 0){
+            runPipes(ShellStruct);
+        }else {
             runSimpleCommands(ShellStruct);
         }
-        else{
-            runPipes(ShellStruct);
-        }
-
+        //if (ShellStruct.num_words == posOfFirstSymbol)
             //runComplex(ShellStruct);
 /*
                if (ShellStruct.num_ArgV_S <= 2){
@@ -59,9 +58,9 @@ int main() {
 
                }
                //runRedirects();
-
-             free(ShellStruct.ArgV_S);
 */
+             free(ShellStruct.ArgV_S);
+
         printf("Conch Shell: ");                                // Loop until user hits Ctrl-D (end of input) or other input error
     }
 
