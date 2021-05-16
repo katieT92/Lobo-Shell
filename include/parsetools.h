@@ -23,7 +23,6 @@ struct Data_IDK
     int numPipes;
     int num_words;
     int num_ArgV_S;
-    int num_redirects;
     char* line_words[MAX_LINE_WORDS + 1];
     char** ArgV_S;
     char* in;
@@ -41,8 +40,7 @@ void runSimpleCommands(struct Data_IDK shell_struct);
 void runPipes(struct Data_IDK shell_struct);
 void printLineWords(struct Data_IDK shell_struct);
 void printArgv(struct Data_IDK shell_struct);
-void runRedirects(struct Data_IDK shell_struct);
 int GetSizeArgV_S(struct Data_IDK *shell_struct);
 void syserror(const char *s);
-void redirectCount(struct Data_IDK *shell_struct);
+
 #endif
