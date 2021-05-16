@@ -59,8 +59,8 @@ void pipePrep(struct Data_IDK *shell_struct) {
 
 
     int j = 0;
-    for (int i = 0; i < numberOfWords; i++) {
-        if (i == numberOfWords - 1 || j == shell_struct->num_ArgV_S ||
+    for (int i = 0; i < numberOfWords && j < shell_struct->num_ArgV_S; i++) {
+        if (i == numberOfWords - 1 || j == shell_struct->num_ArgV_S - 1 ||
             strchr(shell_struct->line_words[i], '|') != NULL) {        // If last command or is pipe
             shell_struct->ArgV_S[j] = NULL;
             j++;
@@ -69,16 +69,18 @@ void pipePrep(struct Data_IDK *shell_struct) {
         } else if (strchr(shell_struct->line_words[j], '>') != NULL) {
 
         } else if (strchr(shell_struct->line_words[j], '<') != NULL) {
+
         }else if (i < numberOfWords - 1 && (strchr(shell_struct->line_words[i], '|') == NULL)) {                 // If not last command and not a pipe
             shell_struct->ArgV_S[j] = shell_struct->line_words[i];
             j++;
+
         }// Append word
     }
 
  }
 
 void runSimpleCommands(struct Data_IDK shell_struct){
-    printf("Top Simple Commands.\n");
+
     pid_t pid;
     switch (pid = fork()) {
         case -1: 
@@ -105,7 +107,7 @@ void runSimpleCommands(struct Data_IDK shell_struct){
             execvp(shell_struct.ArgV_S[0], shell_struct.ArgV_S);
         default:
 
-            fprintf(stderr, "The first child's pid is: %d\n", pid);
+            //fprintf(stderr, "The first child's pid is: %d\n", pid);
             break;
     }
     while (wait(NULL) != -1); 
@@ -237,8 +239,9 @@ void runPipes(struct Data_IDK shell_struct){
         fd1 = saved_stdout;
         dup2(fd1, 1);
         close(fd1);
-    }
-    while (wait(NULL) != -1);                                                           // Reap all the child processes!
+    }// Reap all the child processes!
+    while (wait(NULL) != -1);
+
 }
 
 void printLineWords(struct Data_IDK shell_struct){
@@ -320,6 +323,12 @@ int GetSizeArgV_S(struct Data_IDK *shell_struct){
     shell_struct->in = NULL;
     shell_struct->out = NULL;
     shell_struct->appendOut = NULL;
+/*
+    printf("in TOP GetSize ArgV %s\n", shell_struct->in);
+    printf("out TOP GetSize ArgV %s\n", shell_struct->out);
+    printf("appendOut TOP GetSize ArgV %s\n", shell_struct->appendOut);
+*/
+
 
     int numberOfWords;
     numberOfWords = shell_struct->num_words;
@@ -343,9 +352,11 @@ int GetSizeArgV_S(struct Data_IDK *shell_struct){
             }// Append word
         }
 
-
-
-
+/*
+    printf("in Bottom GetSize ArgV %s\n", shell_struct->in);
+    printf("out Bottom GetSize ArgV %s\n", shell_struct->out);
+    printf("appendOut Bottom GetSize ArgV %s\n", shell_struct->appendOut);
+*/
    return ArgV_WordCount;
 }
 

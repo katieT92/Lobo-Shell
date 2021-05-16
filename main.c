@@ -10,7 +10,7 @@ int main() {
     char* pipeLHS[MAX_LINE_WORDS + 1];
     char* pipeRHS[MAX_LINE_WORDS + 1];
 
-    printf("Conch Shell: ");                            // Loop until user hits Ctrl-D (end of input) or other input error
+    //printf("Conch Shell: ");                            // Loop until user hits Ctrl-D (end of input) or other input error
     while( fgets(line, MAX_LINE_CHARS, stdin) ) {
         if (line[strlen(line)-1] == '\n')               // Delete the new line character from end of line if present   
             line[strlen(line)-1] = '\0';
@@ -31,16 +31,10 @@ int main() {
 
         pipeCount(&ShellStruct);
         redirectCount(&ShellStruct);
-        printLineWords(ShellStruct);
+      //printLineWords(ShellStruct);
         pipePrep(&ShellStruct);
-        printArgv(ShellStruct);
+     //  printArgv(ShellStruct);
 
-        int posOfFirstSymbol = 0;
-        while (posOfFirstSymbol < ShellStruct.num_words && strcmp(line_words[posOfFirstSymbol], "<") != 0
-               && strcmp(line_words[posOfFirstSymbol], ">") != 0 && strcmp(line_words[posOfFirstSymbol], ">>") != 0 &&
-                                                                strcmp(line_words[posOfFirstSymbol], "|") != 0){
-            posOfFirstSymbol++;
-        }
 
         if(ShellStruct.numPipes > 0){
             runPipes(ShellStruct);
@@ -61,7 +55,7 @@ int main() {
 */
              free(ShellStruct.ArgV_S);
 
-        printf("Conch Shell: ");                                // Loop until user hits Ctrl-D (end of input) or other input error
+        //printf("Conch Shell: ");                                // Loop until user hits Ctrl-D (end of input) or other input error
     }
 
     return 0;
